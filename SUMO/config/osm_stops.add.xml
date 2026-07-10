@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-07-10T01:31:29.280435+01:00 by Eclipse SUMO netconvert v1_26_0+1620-768991e99a6
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <type-files value="${SUMO_HOME}\data\typemap\osmNetconvert.typ.xml,${SUMO_HOME}\data\typemap\osmNetconvertShips.typ.xml,${SUMO_HOME}\data\typemap\osmNetconvertAerialway.typ.xml"/>
+        <osm-files value="osm_bbox.osm.xml.gz"/>
+    </input>
+
+    <output>
+        <output-file value="osm.net.xml.gz"/>
+        <output.street-names value="true"/>
+        <output.original-names value="true"/>
+        <ptstop-output value="osm_stops.add.xml"/>
+        <ptline-output value="osm_ptlines.xml"/>
+        <ptline-clean-up value="true"/>
+    </output>
+
+    <projection>
+        <proj.utm value="true"/>
+    </projection>
+
+    <processing>
+        <geometry.remove value="true"/>
+    </processing>
+
+    <tls_building>
+        <tls.discard-simple value="true"/>
+        <tls.join value="true"/>
+        <tls.guess-signals value="true"/>
+        <tls.default-type value="actuated"/>
+    </tls_building>
+
+    <ramp_guessing>
+        <ramps.guess value="true"/>
+    </ramp_guessing>
+
+    <junctions>
+        <junctions.join value="true"/>
+    </junctions>
+
+    <railway>
+        <railway.topology.repair value="true"/>
+    </railway>
+
+</netconvertConfiguration>
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <busStop id="-12185186583" name="Baits II Outbound" lane="-8730916#3_0" startPos="0.00" endPos="0.20" friendlyPos="true" lines="BB"/>
+    <busStop id="-12185186597" name="Fuller Rd at Lot NC-78 Mitchell Field (1)" lane="-441598610#0_0" startPos="7.97" endPos="22.97" friendlyPos="true" lines="BB"/>
+    <busStop id="-12185209783" name="Glen/Catherine Inbound (Temporary)" lane="-441598627#2_0" startPos="79.44" endPos="94.44" friendlyPos="true" lines="BB"/>
+    <busStop id="-12185250013" name="Stockwell Hall Outbound" lane="-213562890#0_0" startPos="0.00" endPos="2.48" friendlyPos="true" lines="BB">
+        <access lane="-315562301#0_0" pos="0.00" length="13.87" friendlyPos="1"/>
+        <access lane="-315562301#1_0" pos="2.63" length="9.02" friendlyPos="1"/>
+        <access lane="315562301#0_0" pos="1.53" length="17.38" friendlyPos="1"/>
+        <access lane="315562301#1_0" pos="1.18" length="13.82" friendlyPos="1"/>
+        <access lane="479828948#3_0" pos="211.63" length="5.49" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-1458141596" name="Cardiovascular Center" lane="-115812718#0_0" startPos="0.00" endPos="9.18" friendlyPos="true" lines="BB">
+        <access lane="1056634365#1_0" pos="0.20" length="27.26" friendlyPos="1"/>
+        <access lane="1490892274#1_0" pos="24.27" length="30.27" friendlyPos="1"/>
+        <access lane="503662555#1_0" pos="6.67" length="13.41" friendlyPos="1"/>
+        <access lane="503662555#2_0" pos="3.61" length="5.62" friendlyPos="1"/>
+        <access lane="503662580_0" pos="80.29" length="8.46" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-2758637998" name="Michigan Union" lane="-216972931#3_0" startPos="0.44" endPos="15.44" friendlyPos="true" lines="62"/>
+    <busStop id="-2758638003" name="N - SU opposite Tappan" lane="-8732308#7_0" startPos="0.00" endPos="12.17" friendlyPos="true" lines="62">
+        <access lane="1446164243_0" pos="0.00" length="22.52" friendlyPos="1"/>
+        <access lane="1447751314#1_0" pos="13.69" length="11.35" friendlyPos="1"/>
+        <access lane="479828861#3_0" pos="6.93" length="18.51" friendlyPos="1"/>
+        <access lane="479828861#4_0" pos="0.00" length="19.75" friendlyPos="1"/>
+        <access lane="501857431#4_0" pos="12.08" length="5.71" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-2874402367" name="State + Arch" lane="-176801838#0_0" startPos="0.00" endPos="12.05" friendlyPos="true" lines="62">
+        <access lane="479194504#2_0" pos="31.86" length="0.00" friendlyPos="1"/>
+        <access lane="479194504#3_0" pos="0.00" length="29.78" friendlyPos="1"/>
+        <access lane="569156677#0_0" pos="0.00" length="32.20" friendlyPos="1"/>
+        <access lane="583389298#2_0" pos="31.74" length="25.12" friendlyPos="1"/>
+        <access lane="586015977#1_0" pos="109.42" length="26.32" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-2874406233" name="Law School" lane="-442028977#5_0" startPos="15.04" endPos="30.04" friendlyPos="true" lines="62">
+        <access lane="502971287#2_0" pos="4.57" length="28.56" friendlyPos="1"/>
+        <access lane="568393777#2_0" pos="19.76" length="2.62" friendlyPos="1"/>
+        <access lane="589346707_0" pos="0.20" length="27.25" friendlyPos="1"/>
+        <access lane="589346708_0" pos="0.00" length="29.18" friendlyPos="1"/>
+        <access lane="589346709_0" pos="0.20" length="25.16" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-2874406430" name="State + Tennis Center" lane="-216972928#21_0" startPos="12.41" endPos="27.41" friendlyPos="true" lines="62">
+        <access lane="-533495416_0" pos="6.07" length="30.32" friendlyPos="1"/>
+        <access lane="283118233#1_0" pos="223.29" length="31.90" friendlyPos="1"/>
+        <access lane="453302733#1_0" pos="19.83" length="1.44" friendlyPos="1"/>
+        <access lane="533495420#2_0" pos="0.00" length="34.56" friendlyPos="1"/>
+        <access lane="533495423#0_0" pos="0.60" length="34.65" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-2874406431" name="State + Hoffman" lane="-216972928#3_0" startPos="15.71" endPos="30.71" friendlyPos="true" lines="62">
+        <access lane="-725379423#1_0" pos="9.79" length="20.33" friendlyPos="1"/>
+        <access lane="453192221#1_0" pos="0.00" length="25.19" friendlyPos="1"/>
+        <access lane="453192225#1_0" pos="23.30" length="3.31" friendlyPos="1"/>
+        <access lane="725379423#1_0" pos="0.00" length="15.54" friendlyPos="1"/>
+        <access lane="725379424_0" pos="0.00" length="24.97" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-2874406432" name="State + Granger" lane="-176801838#11_0" startPos="7.26" endPos="22.26" friendlyPos="true" lines="62">
+        <access lane="1355733121#0_0" pos="0.20" length="26.09" friendlyPos="1"/>
+        <access lane="1355733123_0" pos="0.00" length="26.04" friendlyPos="1"/>
+        <access lane="478372456#3_0" pos="15.19" length="17.23" friendlyPos="1"/>
+        <access lane="478372514#0_0" pos="14.66" length="7.80" friendlyPos="1"/>
+        <access lane="478372515#0_0" pos="0.00" length="28.17" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-4925292397" name="State + Arch" lane="-412420796#1_0" startPos="0.00" endPos="15.00" friendlyPos="true" lines="62">
+        <access lane="-8731680#1_0" pos="52.19" length="29.43" friendlyPos="1"/>
+        <access lane="479194504#2_0" pos="31.41" length="25.11" friendlyPos="1"/>
+        <access lane="569156677#0_0" pos="0.00" length="20.79" friendlyPos="1"/>
+        <access lane="583389297#5_0" pos="70.71" length="18.44" friendlyPos="1"/>
+        <access lane="583389298#2_0" pos="31.31" length="0.00" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-4933284063" name="Law School" lane="-442028977#8_0" startPos="15.38" endPos="30.38" friendlyPos="true" lines="62">
+        <access lane="502971283#4_0" pos="22.76" length="2.53" friendlyPos="1"/>
+        <access lane="502971283#5_0" pos="0.00" length="19.50" friendlyPos="1"/>
+        <access lane="502971284#0_0" pos="0.20" length="17.95" friendlyPos="1"/>
+        <access lane="502971284#1_0" pos="0.00" length="19.10" friendlyPos="1"/>
+        <access lane="570109238#0_0" pos="0.00" length="17.93" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-5889169431" name="State + Henry" lane="-725769607#0_0" startPos="0.00" endPos="2.05" friendlyPos="true" lines="62">
+        <access lane="-640602156#0_0" pos="0.55" length="18.76" friendlyPos="1"/>
+        <access lane="1020736619#1_0" pos="3.52" length="3.01" friendlyPos="1"/>
+        <access lane="478372452#1_0" pos="77.95" length="11.26" friendlyPos="1"/>
+        <access lane="478372452#2_0" pos="0.00" length="9.11" friendlyPos="1"/>
+        <access lane="598219792#1_0" pos="0.40" length="13.27" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-5889169432" name="State + Parkcrest" lane="-216972928#10_0" startPos="0.00" endPos="13.17" friendlyPos="true" lines="62">
+        <access lane="-723694974#0_0" pos="4.25" length="21.96" friendlyPos="1"/>
+        <access lane="283118235#1_0" pos="10.27" length="30.81" friendlyPos="1"/>
+        <access lane="453192223#2_0" pos="22.88" length="2.14" friendlyPos="1"/>
+        <access lane="723694972#0_0" pos="0.00" length="29.26" friendlyPos="1"/>
+        <access lane="723694974#0_0" pos="0.00" length="24.34" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-6010983907" name="Plymouth + Barton" lane="-441142717#0_0" startPos="8.46" endPos="23.46" friendlyPos="true" lines="23"/>
+    <busStop id="-6476750785" name="State + Granger" lane="-1199471555#0_0" startPos="79.64" endPos="94.64" friendlyPos="true" lines="62">
+        <access lane="-382593646_0" pos="0.00" length="20.22" friendlyPos="1"/>
+        <access lane="1355733121#1_0" pos="0.64" length="20.43" friendlyPos="1"/>
+        <access lane="478372456#2_0" pos="130.99" length="4.28" friendlyPos="1"/>
+        <access lane="478372471#1_0" pos="0.00" length="23.90" friendlyPos="1"/>
+        <access lane="478372473#1_0" pos="0.63" length="21.93" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-9866288240" name="BTC - Fourth Ave Stop 1" lane="-213879949#0_0" startPos="0.00" endPos="0.20" friendlyPos="true" lines="23">
+        <access lane="1117763349#2_0" pos="107.56" length="21.12" friendlyPos="1"/>
+        <access lane="1447625360#0_0" pos="24.88" length="0.43" friendlyPos="1"/>
+        <access lane="510901274#5_0" pos="12.21" length="33.35" friendlyPos="1"/>
+        <access lane="590322878#1_0" pos="19.36" length="25.21" friendlyPos="1"/>
+        <access lane="740500654#1_0" pos="0.00" length="33.48" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-9878273940" name="Nixon + Plymouth" lane="-441190744#1_0" startPos="0.00" endPos="15.00" friendlyPos="true" lines="23">
+        <access lane="-1510689885#1_0" pos="22.53" length="22.60" friendlyPos="1"/>
+        <access lane="541401016#2_0" pos="73.21" length="8.92" friendlyPos="1"/>
+        <access lane="541401016#3_0" pos="0.76" length="2.21" friendlyPos="1"/>
+        <access lane="541401017_0" pos="0.00" length="5.27" friendlyPos="1"/>
+        <access lane="553152895#1_0" pos="0.00" length="20.27" friendlyPos="1"/>
+    </busStop>
+    <busStop id="10834307632" name="South 5th Avenue &amp; East Williams Street" lane="1164896544#1_0" startPos="30.40" endPos="45.40" friendlyPos="true" lines="D2A2">
+        <access lane="1447625362#1_0" pos="4.53" length="14.68" friendlyPos="1"/>
+        <access lane="722831077#1_0" pos="0.00" length="15.62" friendlyPos="1"/>
+        <access lane="722831078#7_0" pos="4.00" length="12.54" friendlyPos="1"/>
+        <access lane="722831078#8_0" pos="0.00" length="16.67" friendlyPos="1"/>
+        <access lane="740500654#4_0" pos="0.20" length="16.63" friendlyPos="1"/>
+    </busStop>
+    <busStop id="10906823487" name="Baits I" lane="265959803#3_0" startPos="0.19" endPos="15.19" friendlyPos="true" lines="BB"/>
+    <busStop id="10906823487@18064403" name="Baits I" lane="265959803#3_0" startPos="0.19" endPos="15.19" friendlyPos="true" lines="BB"/>
+    <busStop id="12185186589" name="Bursley Hall Outbound" lane="1316549468_0" startPos="10.83" endPos="25.83" friendlyPos="true" lines="BB"/>
+    <busStop id="12185186591" name="Bursley Hall Inbound" lane="1316745041#1_0" startPos="0.00" endPos="7.07" friendlyPos="true" lines="BB"/>
+    <busStop id="12185186593" name="Pierpont Commons Murfin Inbound" lane="441598567_0" startPos="32.95" endPos="47.95" friendlyPos="true" lines="BB"/>
+    <busStop id="12185186595" name="Pierpont Commons Murfin Outbound" lane="222786837#1_0" startPos="49.62" endPos="64.62" friendlyPos="true" lines="BB"/>
+    <busStop id="12185186599" name="Fuller Rd at Mitchell Field Lot M-75" lane="1316549469_0" startPos="8.68" endPos="23.68" friendlyPos="true" lines="BB"/>
+    <busStop id="12185209455" name="Rackham Building" lane="441598602#0_0" startPos="0.00" endPos="10.28" friendlyPos="true" lines="BB"/>
+    <busStop id="12185209785" name="Glen/Catherine Outbound" lane="441598627#1_0" startPos="12.91" endPos="27.91" friendlyPos="true" lines="BB"/>
+    <busStop id="12185235001" name="Central Campus Transit Center: Chemistry" lane="1316551961_0" startPos="65.72" endPos="80.72" friendlyPos="true" lines="BB"/>
+    <busStop id="12185235001@18064403" name="Central Campus Transit Center: Chemistry" lane="1316551961_0" startPos="65.72" endPos="80.72" friendlyPos="true" lines="BB"/>
+    <trainStop id="2264452369" name="Ann Arbor" lane="1237131880_0" startPos="0.00" endPos="200.00" friendlyPos="true" lines="Wolverine">
+        <access lane="-1320755213#1_0" pos="39.96" length="14.45" friendlyPos="1"/>
+        <access lane="1320755213#1_0" pos="34.22" length="9.65" friendlyPos="1"/>
+        <access lane="1320755214_0" pos="32.81" length="33.15" friendlyPos="1"/>
+        <access lane="482675542#2_0" pos="76.86" length="2.76" friendlyPos="1"/>
+        <access lane="482675548#1_0" pos="40.83" length="30.18" friendlyPos="1"/>
+    </trainStop>
+    <busStop id="2343835890" name="Plymouth Rd. Park &amp; Ride Lot" lane="1079855715_0" startPos="20.36" endPos="35.36" friendlyPos="true" lines="23"/>
+    <busStop id="2343844176" name="Green Road Park &amp; Ride Lot" lane="1079855716_0" startPos="0.00" endPos="15.00" friendlyPos="true" lines="23"/>
+    <busStop id="2623016806" name="Baits II Inbound" lane="8730916#2_0" startPos="0.00" endPos="13.88" friendlyPos="true" lines="BB"/>
+    <busStop id="2758637922" lane="442152513_0" startPos="0.00" endPos="0.20" friendlyPos="true" lines="62">
+        <access lane="-271497382#2_0" pos="0.00" length="14.93" friendlyPos="1"/>
+        <access lane="-271497385_0" pos="0.00" length="11.61" friendlyPos="1"/>
+        <access lane="-513329496#2_0" pos="4.58" length="7.79" friendlyPos="1"/>
+        <access lane="271497382#2_0" pos="29.39" length="10.18" friendlyPos="1"/>
+        <access lane="513329496#2_0" pos="3.58" length="2.99" friendlyPos="1"/>
+    </busStop>
+    <busStop id="4209298089" lane="442152507#1_0" startPos="0.00" endPos="0.20" friendlyPos="true" lines="62">
+        <access lane="-288223464#0_0" pos="2.20" length="39.36" friendlyPos="1"/>
+        <access lane="404325918#1_0" pos="0.20" length="41.50" friendlyPos="1"/>
+        <access lane="404325925#0_0" pos="71.15" length="2.18" friendlyPos="1"/>
+        <access lane="404325934_0" pos="22.88" length="25.83" friendlyPos="1"/>
+        <access lane="419809573#2_0" pos="32.09" length="41.01" friendlyPos="1"/>
+    </busStop>
+    <busStop id="4814257498" name="W - Church north of South U" lane="442031902#3_0" startPos="23.82" endPos="38.82" friendlyPos="true" lines="62">
+        <access lane="-586147023#1_0" pos="0.00" length="35.38" friendlyPos="1"/>
+        <access lane="504121167#1_0" pos="12.83" length="25.85" friendlyPos="1"/>
+        <access lane="504121172#2_0" pos="34.73" length="0.30" friendlyPos="1"/>
+        <access lane="586147023#0_0" pos="0.20" length="37.73" friendlyPos="1"/>
+        <access lane="586147023#1_0" pos="0.94" length="31.61" friendlyPos="1"/>
+    </busStop>
+    <busStop id="5763980405" name="University Hospital (Taubman)" lane="441598581#3_0" startPos="55.84" endPos="70.84" friendlyPos="true" lines="23"/>
+    <trainStop id="7024286689" name="Ann Arbor" lane="1237131881#1_0" startPos="485.18" endPos="685.18" friendlyPos="true">
+        <access lane="-1320755213#0_0" pos="107.38" length="11.96" friendlyPos="1"/>
+        <access lane="1032705835_0" pos="29.78" length="8.74" friendlyPos="1"/>
+        <access lane="1320755213#0_0" pos="272.85" length="7.16" friendlyPos="1"/>
+        <access lane="503659192#1_0" pos="15.38" length="15.21" friendlyPos="1"/>
+        <access lane="512055785#2_0" pos="24.09" length="33.22" friendlyPos="1"/>
+    </trainStop>
+    <busStop id="9078233670" name="Green + Nixon" lane="512575039_0" startPos="0.00" endPos="4.73" friendlyPos="true" lines="23">
+        <access lane="-852037411#0_0" pos="0.00" length="5.17" friendlyPos="1"/>
+        <access lane="-852037411#1_0" pos="21.09" length="5.37" friendlyPos="1"/>
+        <access lane="852037411#1_0" pos="0.00" length="7.75" friendlyPos="1"/>
+        <access lane="852037412#1_0" pos="13.14" length="7.61" friendlyPos="1"/>
+        <access lane="981454702_0" pos="0.00" length="0.00" friendlyPos="1"/>
+    </busStop>
+</additional>

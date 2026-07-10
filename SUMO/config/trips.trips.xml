@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-07-10 01:31:36.222717 by Eclipse SUMO $Id: ptlines2flows.py v1_3_1+0313-ccb31df3eb jakob.erdmann@dlr.de 2019-09-02 13:26:32 +0200 $ v1_26_0+1620-768991e99a6
+<configuration>
+    <net-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\osm.net.xml.gz"/>
+    <ptlines-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\osm_ptlines.xml"/>
+    <ptstops-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\osm_stops.add.xml"/>
+    <output-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\osm_pt.rou.xml"/>
+    <stopinfos-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\stopinfos.xml"/>
+    <routes-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\vehroutes.xml"/>
+    <trips-file value="D:\VSCODE\Progetti-TIROCINIO\2026-07-10-01-30-49\trips.trips.xml"/>
+    <min-stops value="0"/>
+    <extend-to-fringe value="True"/>
+    <random-begin value="True"/>
+    <seed value="42"/>
+    <ignore-errors value="True"/>
+    <types value="bus,tram,subway,light_rail,train,trolleybus,monorail,minibus,share_taxi,ferry,aerialway"/>
+    <vtype-prefix value="pt_"/>
+    <verbose value="True"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="pt_bus" vClass="bus" speedFactor="0.95"/>
+    <vType id="pt_tram" vClass="tram" speedFactor="1.0"/>
+    <vType id="pt_train" vClass="rail"/>
+    <vType id="pt_subway" vClass="subway"/>
+    <vType id="pt_light_rail" vClass="rail_urban"/>
+    <vType id="pt_monorail" vClass="rail_urban"/>
+    <vType id="pt_trolleybus" vClass="bus" speedFactor="0.95"/>
+    <vType id="pt_minibus" vClass="bus" speedFactor="0.95"/>
+    <vType id="pt_share_taxi" vClass="taxi" speedFactor="0.95"/>
+    <vType id="pt_aerialway" vClass="cable_car" length="2.5" width="2" personCapacity="4"/>
+    <vType id="pt_ferry" vClass="ship"/>
+    <trip id="0_train_Wolverine:0" type="pt_train" depart="15.0" departLane="best" from="1237131881#1" to="1237131881#1">
+        <stop busStop="7024286689" duration="30"/>  <!-- Ann Arbor -->
+    </trip>
+    <trip id="1_train_Wolverine:1" type="pt_train" depart="15.0" departLane="best" from="1237131881#1" to="1237131881#1">
+        <stop busStop="7024286689" duration="30"/>  <!-- Ann Arbor -->
+    </trip>
+    <trip id="2_train_Wolverine:2" type="pt_train" depart="17.0" departLane="best" from="1237131881#1" to="1237131881#1">
+        <stop busStop="7024286689" duration="30"/>  <!-- Ann Arbor -->
+    </trip>
+    <trip id="3_train_Wolverine:3" type="pt_train" depart="52.0" departLane="best" from="9596403#0" to="1237131877">
+        <stop busStop="2264452369" duration="30"/>  <!-- Ann Arbor -->
+    </trip>
+    <trip id="4_train_Wolverine:4" type="pt_train" depart="131.0" departLane="best" from="9596403#0" to="1237131877">
+        <stop busStop="2264452369" duration="30"/>  <!-- Ann Arbor -->
+    </trip>
+    <trip id="5_bus_23:0" type="pt_bus" depart="133.0" departLane="best" from="1079855716" to="-213879949#0">
+        <stop busStop="2343844176" duration="30"/>  <!-- Green Road Park & Ride Lot -->
+        <stop busStop="2343835890" duration="30"/>  <!-- Plymouth Rd. Park & Ride Lot -->
+        <stop busStop="9078233670" duration="30"/>  <!-- Green + Nixon -->
+        <stop busStop="-9878273940" duration="30"/>  <!-- Nixon + Plymouth -->
+        <stop busStop="-6010983907" duration="30"/>  <!-- Plymouth + Barton -->
+        <stop busStop="5763980405" duration="30"/>  <!-- University Hospital (Taubman) -->
+        <stop busStop="-9866288240" duration="30"/>  <!-- BTC - Fourth Ave Stop 1 -->
+    </trip>
+    <trip id="6_bus_D2A2:0" type="pt_bus" depart="165.0" departLane="best" from="520193206" to="1164896544#1">
+        <stop busStop="10834307632" duration="30"/>  <!-- South 5th Avenue & East Williams Street -->
+    </trip>
+    <trip id="7_bus_D2A2:1" type="pt_bus" depart="253.0" departLane="best" from="1164896544#1" to="520189567#1">
+        <stop busStop="10834307632" duration="30"/>  <!-- South 5th Avenue & East Williams Street -->
+    </trip>
+    <trip id="8_train_Wolverine:5" type="pt_train" depart="303.0" departLane="best" from="9596403#0" to="1237131877">
+        <stop busStop="2264452369" duration="30"/>  <!-- Ann Arbor -->
+    </trip>
+    <trip id="9_bus_BB:0" type="pt_bus" depart="383.0" departLane="best" from="1316551961" to="265959803#3">
+        <stop busStop="12185235001" duration="30"/>  <!-- Central Campus Transit Center: Chemistry -->
+        <stop busStop="12185209785" duration="30"/>  <!-- Glen/Catherine Outbound -->
+        <stop busStop="12185186599" duration="30"/>  <!-- Fuller Rd at Mitchell Field Lot M-75 -->
+        <stop busStop="12185186595" duration="30"/>  <!-- Pierpont Commons Murfin Outbound -->
+        <stop busStop="12185186589" duration="30"/>  <!-- Bursley Hall Outbound -->
+        <stop busStop="-12185186583" duration="30"/>  <!-- Baits II Outbound -->
+        <stop busStop="10906823487" duration="30"/>  <!-- Baits I -->
+    </trip>
+    <trip id="10_bus_BB:1" type="pt_bus" depart="406.0" departLane="best" from="1316551961" to="265959803#3">
+        <stop busStop="12185235001" duration="30"/>  <!-- Central Campus Transit Center: Chemistry -->
+        <stop busStop="-12185250013" duration="30"/>  <!-- Stockwell Hall Outbound -->
+        <stop busStop="-1458141596" duration="30"/>  <!-- Cardiovascular Center -->
+        <stop busStop="12185209785" duration="30"/>  <!-- Glen/Catherine Outbound -->
+        <stop busStop="12185186599" duration="30"/>  <!-- Fuller Rd at Mitchell Field Lot M-75 -->
+        <stop busStop="12185186595" duration="30"/>  <!-- Pierpont Commons Murfin Outbound -->
+        <stop busStop="12185186589" duration="30"/>  <!-- Bursley Hall Outbound -->
+        <stop busStop="-12185186583" duration="30"/>  <!-- Baits II Outbound -->
+        <stop busStop="10906823487" duration="30"/>  <!-- Baits I -->
+    </trip>
+    <trip id="11_bus_BB:2" type="pt_bus" depart="441.0" departLane="best" from="265959803#3" to="1316551961">
+        <stop busStop="10906823487@18064403" duration="30"/>  <!-- Baits I -->
+        <stop busStop="2623016806" duration="30"/>  <!-- Baits II Inbound -->
+        <stop busStop="12185186591" duration="30"/>  <!-- Bursley Hall Inbound -->
+        <stop busStop="12185186593" duration="30"/>  <!-- Pierpont Commons Murfin Inbound -->
+        <stop busStop="-12185186597" duration="30"/>  <!-- Fuller Rd at Lot NC-78 Mitchell Field (1) -->
+        <stop busStop="-12185209783" duration="30"/>  <!-- Glen/Catherine Inbound (Temporary) -->
+        <stop busStop="12185209455" duration="30"/>  <!-- Rackham Building -->
+        <stop busStop="12185235001@18064403" duration="30"/>  <!-- Central Campus Transit Center: Chemistry -->
+    </trip>
+    <trip id="12_bus_62:0" type="pt_bus" depart="535.0" departLane="best" from="608385951#0" to="-216972931#1">
+        <stop busStop="-4925292397" duration="30"/>  <!-- State + Arch -->
+        <stop busStop="-2874402367" duration="30"/>  <!-- State + Arch -->
+        <stop busStop="-2874406233" duration="30"/>  <!-- Law School -->
+        <stop busStop="-2874406432" duration="30"/>  <!-- State + Granger -->
+        <stop busStop="-4933284063" duration="30"/>  <!-- Law School -->
+        <stop busStop="-2874406431" duration="30"/>  <!-- State + Hoffman -->
+        <stop busStop="-2874406430" duration="30"/>  <!-- State + Tennis Center -->
+        <stop busStop="2758637922" duration="30"/>  <!-- None -->
+        <stop busStop="4209298089" duration="30"/>  <!-- None -->
+        <stop busStop="-2758637998" duration="30"/>  <!-- Michigan Union -->
+        <stop busStop="-5889169431" duration="30"/>  <!-- State + Henry -->
+        <stop busStop="-5889169432" duration="30"/>  <!-- State + Parkcrest -->
+        <stop busStop="-6476750785" duration="30"/>  <!-- State + Granger -->
+        <stop busStop="4814257498" duration="30"/>  <!-- W - Church north of South U -->
+        <stop busStop="-2758638003" duration="30"/>  <!-- N - SU opposite Tappan -->
+    </trip>
+</routes>

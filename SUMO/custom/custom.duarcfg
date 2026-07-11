@@ -8,7 +8,7 @@
     </input>
 
     <output>
-        <output-file value="osm.rou.xml"/>
+        <output-file value="custom.rou.xml"/>
     </output>
 
 </duarouterConfiguration>

@@ -3,14 +3,4 @@
         <param key="has.battery.device" value="true"/>
         <param key="device.battery.capacity" value="21.400"/>
     </vType>
-
-    <!-- <trip
-    id="10.0"
-    depart="0"
-    fromLonLat="-83.763366,42.276966"
-    toLonLat="-83.754457,42.278779"
-    type="leaf_2013"
-    color="blue"
-    departSpeed="14.88"
-    arrivalSpeed="9.56"/> -->
 </routes>

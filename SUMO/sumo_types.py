@@ -2,13 +2,18 @@ from dataclasses import dataclass
 
 @dataclass
 class SUMOTrip:
-    vehId: float
-    tripId: float
+    id: str
+    type: str
 
-    startLatitude: float
-    startLongitude: float
-    endLatitude: float
-    endLongitude: float
+    depart: int
+
+    fromLonLat: str
+    toLonLat: str
 
     startSpeed: float
     endSpeed: float
+
+@dataclass
+class SUMOStop:
+    lane: str
+    duration: float

@@ -7,7 +7,7 @@ def runDuarouter():
         subprocess.run(
             [
                 "duarouter",
-                "osm.duarcfg"
+                "custom.duarcfg"
             ],
             cwd=CUSTOM,
             check=True)

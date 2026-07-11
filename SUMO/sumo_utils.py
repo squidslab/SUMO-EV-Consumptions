@@ -1,5 +1,6 @@
 import math
 from sumolib.net import readNet
+from sumolib.net.lane import Lane
 
 from SUMO.sumo_paths import CONFIG
 
@@ -21,17 +22,19 @@ def getNearestLane(lat: float, lon: float):
         raise RuntimeError("No lanes found within the specified radius.")
 
     # Find the nearest lane
-    nearestLane = min(neighbors, key=lambda item: item[1])[0]
-    return nearestLane
+    return min(neighbors, key=lambda item: item[1])[0]
 
-# Returns the relative offset (in meters) of the specified GPS coordinates along the nearest lane, measured from the beginning of the lane
-def calculateRelativeOffset(lat: float, lon: float):
+# Returns the relative offset (in meters, measured from the beginning of the lane) of the specified GPS coordinates along specified lane or the nearest lane
+def calculateRelativeOffset(lat: float, lon: float, lane: Lane | None = None):
     # Convert GPS coordinates to the SUMO coordinate system
     x, y = convertLonLatToSumoCoords(lat, lon)
 
-    # Retrieve the nearest lane and its polyline representation
-    nearestLane = getNearestLane(lat, lon)
-    shape = nearestLane.getShape()
+    # Retrieve the nearest lane if necessary
+    if lane is None:
+        lane = getNearestLane(lat, lon)
+
+    # Retrieve considered lane polyline representation
+    shape = lane.getShape()
 
     # Track the closest projection on the lane and its corresponding offset
     bestOffset = 0.0

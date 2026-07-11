@@ -8,7 +8,7 @@ eVEDFiles = getDatasetEV(include=["EV"], entire=False)
 eVED = pd.concat(
     list(map(lambda datasetFile: datasetFile.data, eVEDFiles)),
     ignore_index=True
-)
+).sort_values(["DayNum", "VehId", "Trip", "Timestamp(ms)"])
 
 def getDatasetStats():
     # Calculate dataset global stats
@@ -32,9 +32,19 @@ def getVehStats():
 def getTripStats():
     # Calculate some statistics for each vehicle-trip pair
     return eVED.groupby(["VehId", "Trip"]).agg(
+        totalEnergy=("Energy_Consumption", lambda energy: energy.sum() * 1000),
+
+        startLatitude=("Matchted Latitude[deg]", "first"),
+        startLongitude=("Matched Longitude[deg]", "first"),
+
+        endLatitude=("Matchted Latitude[deg]", "last"),
+        endLongitude=("Matched Longitude[deg]", "last"),
+
+        startSpeed=("Vehicle Speed[km/h]", lambda speed: speed.iloc[0] / 3.6),
+        endSpeed=("Vehicle Speed[km/h]", lambda speed: speed.iloc[-1] / 3.6),
+
         avgSpeed=("Vehicle Speed[km/h]", lambda speed: speed.mean() / 3.6),
         maxSpeed=("Vehicle Speed[km/h]", lambda speed: speed.max() / 3.6),
-        totalEnergy=("Energy_Consumption", lambda energy: energy.sum() * 1000),
     ).reset_index()
 
 def getDailyStats():

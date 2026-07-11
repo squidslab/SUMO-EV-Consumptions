@@ -2,10 +2,11 @@ import os
 import glob
 import pandas as pd
 
+from datasets.dataset_paths import DATASETS
 from datasets.dataset_types import DatasetFile
 
 # Returns eVED using csv files at specified path. It can be returned as a whole dataframe or a list of dataframes for each csv file.
-def getDataset(path: str = "./datasets/eVED", entire: bool = True):
+def getDataset(path: str = str(DATASETS / "eVED"), entire: bool = True):
     csvFiles = glob.glob(path + "/*.csv")
     datasetFiles: list[DatasetFile] = []
 
@@ -29,7 +30,7 @@ def getDataset(path: str = "./datasets/eVED", entire: bool = True):
         return datasetFiles
 
 # Returns vehicle ids for HEV, PHEV and/or EV vehicles
-def getElectricVehIds(path: str = "./datasets/eVED/static", types: list[str] = ["HEV", "PHEV", "EV"]):
+def getElectricVehIds(path: str = str(DATASETS / "eVED/static"), types: list[str] = ["HEV", "PHEV", "EV"]):
     csvFiles = glob.glob(path + "/*.csv")
     electricVehIds: list[float] = []
 
@@ -65,7 +66,7 @@ def getElectricVehIds(path: str = "./datasets/eVED/static", types: list[str] = [
     return electricVehIds
 
 # Returns dataset containing only electric vehicles (HEV, PHEV and/or EV) from eVED
-def getDatasetEV(path: str = "./datasets/eVED", include: list[str] = ["HEV", "PHEV", "EV"], entire: bool = True):
+def getDatasetEV(path: str = str(DATASETS / "eVED"), include: list[str] = ["HEV", "PHEV", "EV"], entire: bool = True):
     dataset = getDataset(path, entire)
     electricVehIds: list[float] = getElectricVehIds(types=include)
 

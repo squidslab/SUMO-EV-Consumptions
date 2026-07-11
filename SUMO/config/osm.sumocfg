@@ -7,15 +7,21 @@
 
     <input>
         <net-file value="osm.net.xml.gz"/>
-        <route-files value="osm_pt.rou.xml"/>
+        <route-files value="osm_pt.rou.xml,../custom/osm.rou.xml"/>
         <additional-files value="osm_stops.add.xml,output.add.xml"/>
     </input>
 
     <output>
-        <tripinfo-output value="tripinfos.xml"/>
-        <stop-output value="stopinfos.xml"/>
-        <statistic-output value="stats.xml"/>
+        <tripinfo-output value="../output/tripinfos.xml"/>
+        <stop-output value="../output/stopinfos.xml"/>
+        <statistic-output value="../output/stats.xml"/>
+        <battery-output value="../output/battery.out.xml"/>
+        <battery-output.precision value="4"/>
     </output>
+
+    <time>
+        <step-length value="0.2"/>
+    </time>
 
     <processing>
         <ignore-route-errors value="true"/>

@@ -29,9 +29,33 @@ def getVehStats():
         samplesCount=("Trip", "size")
     ).reset_index()
 
+def findStops(trip: pd.DataFrame):
+    stops = []
+
+    # Ensure records are ordered by timestamp
+    trip = trip.sort_values("Timestamp(ms)")
+
+    # Identify records where vehicle is stopped
+    stopped = trip["Vehicle Speed[km/h]"] == 0
+
+    # Create groups of consecutive stopped records
+    stopGroups = stopped.ne(stopped.shift()).cumsum()
+
+    for _, group in trip[stopped].groupby(stopGroups[stopped]):
+        startRecord = group.iloc[0]
+        endRecord = group.iloc[-1]
+
+        stops.append({
+            "latitude": float(startRecord["Matchted Latitude[deg]"]),
+            "longitude": float(startRecord["Matched Longitude[deg]"]),
+            "duration": float((endRecord["Timestamp(ms)"] - startRecord["Timestamp(ms)"]) / 1000)
+        })
+
+    return stops
+
 def getTripStats():
-    # Calculate some statistics for each vehicle-trip pair
-    return eVED.groupby(["VehId", "Trip"]).agg(
+    # Calculate some statistics for each trip
+    tripStats = eVED.groupby(["VehId", "Trip"]).agg(
         totalEnergy=("Energy_Consumption", lambda energy: energy.sum() * 1000),
 
         startLatitude=("Matchted Latitude[deg]", "first"),
@@ -45,7 +69,17 @@ def getTripStats():
 
         avgSpeed=("Vehicle Speed[km/h]", lambda speed: speed.mean() / 3.6),
         maxSpeed=("Vehicle Speed[km/h]", lambda speed: speed.max() / 3.6),
-    ).reset_index()
+    )
+
+    # Calculate stops for each trip
+    stops = (
+        eVED
+        .groupby(["VehId", "Trip"])
+        .apply(findStops)
+        .rename("stops")
+    )
+
+    return tripStats.join(stops).reset_index()
 
 def getDailyStats():
     # Convert DayNum values to integers, so that all samples belonging to the same day are grouped together

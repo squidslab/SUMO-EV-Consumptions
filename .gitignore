@@ -4,5 +4,10 @@
 # Dataset files
 datasets/eVED/*.csv
 
+# SUMO
+SUMO/config/
+SUMO/custom/
+SUMO/output/
+
 # Python cache
 */__pycache__

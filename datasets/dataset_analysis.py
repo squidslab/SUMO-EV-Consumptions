@@ -56,7 +56,10 @@ def findStops(trip: pd.DataFrame):
 def getTripStats():
     # Calculate some statistics for each trip
     tripStats = eVED.groupby(["VehId", "Trip"]).agg(
-        totalEnergy=("Energy_Consumption", lambda energy: energy.sum() * 1000),
+        totalEnergyConsumed=(
+            "Energy_Consumption",
+            lambda energy: energy.sum() * 1000
+        ),
 
         startLatitude=("Matchted Latitude[deg]", "first"),
         startLongitude=("Matched Longitude[deg]", "first"),

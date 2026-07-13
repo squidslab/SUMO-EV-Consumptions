@@ -39,7 +39,7 @@ plt.show()
 # Summarizes the distribution of total energy consumption per trip.
 # The box represents the interquartile range (IQR), the central line is the median,
 # and points outside the whiskers indicate potential outliers.
-plt.boxplot(tripStats["totalEnergy"], flierprops={"markersize": 3})
+plt.boxplot(tripStats["totalEnergyConsumed"], flierprops={"markersize": 3})
 plt.ylabel("Energy [Wh]")
 plt.title("Total Energy Consumption per Trip")
 plt.show()
@@ -48,7 +48,7 @@ plt.show()
 # For each vehicle, the boxplot highlights median consumption, variability,
 # and potential outliers, enabling a direct comparison of energy usage patterns.
 tripStats.boxplot(
-    column="totalEnergy",
+    column="totalEnergyConsumed",
     by="VehId",
     flierprops={"markersize": 3}
 ).set_xticklabels([])
@@ -63,7 +63,7 @@ plt.show()
 # The x-axis represents total energy consumed during a trip, while the y-axis
 # indicates the number of trips falling within each energy interval.
 plt.figure(figsize=(14, 6))
-plt.hist(tripStats["totalEnergy"], bins=30)
+plt.hist(tripStats["totalEnergyConsumed"], bins=30)
 plt.xlabel("Energy [Wh]")
 plt.ylabel("Number of trips")
 plt.title("Distribution of Total Energy Consumption per Trip")

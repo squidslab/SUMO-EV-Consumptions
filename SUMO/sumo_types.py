@@ -24,8 +24,6 @@ class SUMOTrip:
 
 @dataclass
 class SUMOVehicleExtraData:
-    id: str
-
     startLatitude: float
     startLongitude: float
     endLatitude: float
@@ -34,6 +32,5 @@ class SUMOVehicleExtraData:
     stops: list[dict[str, float]]
 
 @dataclass
-class SUMOStop:
-    lane: str
-    duration: float
+class SUMOBatteryData:
+    totalEnergyConsumed: float

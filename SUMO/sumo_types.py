@@ -34,3 +34,12 @@ class SUMOVehicleExtraData:
 @dataclass
 class SUMOBatteryData:
     totalEnergyConsumed: float
+
+@dataclass
+class SUMOSimStats:
+    generatedTrips: int
+    generatedVehicles: int
+    simulatedVehicles: int
+
+    discardedByDuarouter: int
+    failedSimulation: int

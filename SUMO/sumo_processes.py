@@ -7,7 +7,9 @@ def runDuarouter():
         subprocess.run(
             [
                 "duarouter",
-                "custom.duarcfg"
+                "--configuration-file",
+                "custom.duarcfg",
+                "--ignore-errors"
             ],
             cwd=CUSTOM,
             check=True)
@@ -19,7 +21,11 @@ def runSUMO():
         subprocess.run(
             [
                 "sumo",
-                "osm.sumocfg"
+                "-c",
+                "osm.sumocfg",
+                "--duration-log.statistics",
+                "--verbose",
+                "--ignore-route-errors"
             ],
             cwd=CONFIG,
             check=True)

@@ -4,7 +4,7 @@ from datetime import datetime
 from datasets.dataset_utils import getDatasetEV
 
 # Retrieve eVED, containing only electric vehicles
-eVEDFiles = getDatasetEV(include=["EV"], entire=False)
+eVEDFiles = getDatasetEV(entire=False)
 eVED = pd.concat(
     list(map(lambda datasetFile: datasetFile.data, eVEDFiles)),
     ignore_index=True

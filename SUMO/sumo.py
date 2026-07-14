@@ -3,15 +3,14 @@ import pandas as pd
 
 from SUMO.sumo_types import SUMOTrip, SUMOVehicleExtraData
 from SUMO.sumo_processes import runDuarouter, runSUMO
-from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut
+from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
-def runSimulation(trips: pd.DataFrame):
+def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], maxTripDuration=math.ceil(getMaxTripDuration()) + 30):
     sumoTrips: list[SUMOTrip] = []
     vehiclesExtra: dict[str, SUMOVehicleExtraData] = {}
 
-    # Set currentDepart and retrieve max trip duration from previous simulation
+    # Set currentDepart
     currentDepart: int = 0
-    maxTripDuration = math.ceil(getMaxTripDuration()) + 30
 
     # Iterate over dataset trip records and for each generate SUMO trip data and SUMO vehicle extra data
     for trip in trips.to_dict(orient="records"):
@@ -19,7 +18,7 @@ def runSimulation(trips: pd.DataFrame):
 
         sumoTrips.append(SUMOTrip(
             id=sumoVehicleId,
-            type="leaf_2013",
+            type=SUMOvehicleTypes[trip['VehId']],
 
             depart=currentDepart,
 
@@ -53,5 +52,5 @@ def runSimulation(trips: pd.DataFrame):
     # Start SUMO simulation
     runSUMO()
 
-    # Return battery data by reading tripinfos.xml, which is the desired simulation output
-    return readSUMOBatteryOut()
+    # Return battery data output by reading tripinfos.xml and other statistics about simulation
+    return readSUMOBatteryOut(), getSUMOSimulationStats()

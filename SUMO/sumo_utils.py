@@ -92,3 +92,17 @@ def getLanePositionFromEdgeList(lat: float, lon: float, edgeIds: list[str]):
             bestLanePosition = currentLanePosition
 
     return bestLanePosition
+
+def mapSUMOVehicleTypes(hevIds: list[float], phevIds: list[float], evIds: list[float]):
+    SUMOvehicleTypes: dict[float, str] = {}
+
+    for vehId in hevIds:
+        SUMOvehicleTypes[vehId] = "hev_generic"
+
+    for vehId in phevIds:
+        SUMOvehicleTypes[vehId] = "phev_generic"
+
+    for vehId in evIds:
+        SUMOvehicleTypes[vehId] = "leaf_2013"
+
+    return SUMOvehicleTypes

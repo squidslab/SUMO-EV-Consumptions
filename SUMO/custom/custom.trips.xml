@@ -1,6 +1,16 @@
 <routes>
-    <vType id="leaf_2013" vClass="passenger" emissionClass="Energy" length="4.4" accel="2.71" decel="2.71" maxSpeed="145" sigma="0.5">
-        <param key="has.battery.device" value="true"/>
-        <param key="device.battery.capacity" value="21.400"/>
+    <vType id="leaf_2013" vClass="passenger" emissionClass="Energy" length="4.4" width="1.77" height="1.55" mass="1587.57" accel="2.71" decel="2.71" maxSpeed="145" sigma="0.5">
+        <param key="has.battery.device" value="true" />
+        <param key="device.battery.capacity" value="21.400" />
+    </vType>
+
+    <vType id="phev_generic" vClass="passenger" emissionClass="Energy" mass="1814.37" accel="2.5" decel="3.0" maxSpeed="160" sigma="0.5">
+        <param key="has.battery.device" value="true" />
+        <param key="device.battery.capacity" value="10000" />
+    </vType>
+
+    <vType id="hev_generic" vClass="passenger" emissionClass="Energy" mass="2041.16" accel="2.5" decel="3.0" maxSpeed="160" sigma="0.5">
+        <param key="has.battery.device" value="true" />
+        <param key="device.battery.capacity" value="1500" />
     </vType>
 </routes>

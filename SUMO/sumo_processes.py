@@ -22,10 +22,7 @@ def runSUMO():
             [
                 "sumo",
                 "-c",
-                "osm.sumocfg",
-                "--duration-log.statistics",
-                "--verbose",
-                "--ignore-route-errors"
+                "osm.sumocfg"
             ],
             cwd=CONFIG,
             check=True)

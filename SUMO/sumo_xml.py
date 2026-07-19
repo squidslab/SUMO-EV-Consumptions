@@ -100,9 +100,6 @@ def getMaxTripDuration():
         maxDuration = None
 
         for tripinfo in tripinfos.findall("tripinfo"):
-            if tripinfo.get("id").startswith("pt_"):
-                continue
-
             duration = float(tripinfo.get("duration"))
 
             if maxDuration is None or duration > maxDuration:
@@ -121,9 +118,6 @@ def readSUMOBatteryOut():
 
     for tripinfo in tripinfos.findall("tripinfo"):
         tripinfoId = tripinfo.get("id")
-
-        if tripinfoId.startswith("pt_"):
-            continue
 
         batteryData[tripinfoId] = SUMOBatteryData(
             totalEnergyConsumed=float(
@@ -147,11 +141,7 @@ def getSUMOSimulationStats():
     # Count vehicles actually simulated
     tripInfosXml = ET.parse(OUTPUT / "tripinfos.xml")
     tripinfos = tripInfosXml.getroot().findall("tripinfo")
-    simulatedVehicles = sum(
-        1
-        for tripinfo in tripinfos
-        if not tripinfo.get("id").startswith("pt_")
-    )
+    simulatedVehicles = len(tripinfos)
 
     return SUMOSimStats(
         generatedTrips=generatedTrips,

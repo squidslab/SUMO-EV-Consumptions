@@ -11,4 +11,8 @@
         <output-file value="custom.rou.xml"/>
     </output>
 
+    <processing>
+        <seed value="42"/>
+    </processing>
+
 </duarouterConfiguration>

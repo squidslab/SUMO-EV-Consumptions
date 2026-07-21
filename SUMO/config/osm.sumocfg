@@ -26,7 +26,8 @@
     </mesoscopic> -->
 
     <processing>
-        <threads value="8"/>
+        <seed value="42"/>
+        <threads value="1"/>
         <ignore-route-errors value="true"/>
         <tls.actuated.jam-threshold value="30"/>
         <!-- <time-to-teleport value="300"/> -->

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from datasets.dataset_utils import getElectricVehIds
+from datasets.dataset_data import getElectricVehIds
 from datasets.dataset_analysis import getTripStats
 
 from SUMO.sumo_utils import mapSUMOVehicleTypes

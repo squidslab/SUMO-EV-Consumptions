@@ -1,85 +1,93 @@
-import os
-import glob
+import math
 import pandas as pd
 
-from datasets.dataset_paths import DATASETS
-from datasets.dataset_types import DatasetFile
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371000  # Earth radius in meters
 
-# Returns eVED using csv files at specified path. It can be returned as a whole dataframe or a list of dataframes for each csv file.
-def getDataset(path: str = str(DATASETS / "eVED"), entire: bool = True):
-    csvFiles = glob.glob(path + "/*.csv")
-    datasetFiles: list[DatasetFile] = []
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
 
-    # Read csv files, create a dataframe for each then append them in the datasetFiles list
-    for csv in csvFiles:
-        dataframe = pd.read_csv(csv, dtype={'Speed Limit[km/h]': str})
-        datasetFiles.append(
-            DatasetFile(
-                name=os.path.splitext(os.path.basename(csv))[0],
-                data=dataframe
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(dphi / 2) ** 2 +
+        math.cos(phi1) *
+        math.cos(phi2) *
+        math.sin(dlambda / 2) ** 2
+    )
+
+    return 2 * R * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+def calculateTripDistance(trip: pd.DataFrame):
+    coords = zip(
+        trip["Matchted Latitude[deg]"],
+        trip["Matched Longitude[deg]"]
+    )
+
+    distance = 0.0
+    previous = None
+
+    for lat, lon in coords:
+        if previous:
+            distance += haversine(
+                previous[0],
+                previous[1],
+                lat,
+                lon
             )
-        )
 
-    # Return the entire dataset or a list contaning a dataframe for each csv
-    if (entire):
-        return pd.concat(
-            list(map(lambda datasetFile: datasetFile.data, datasetFiles)),
-            ignore_index=True
-        )
-    else:
-        return datasetFiles
+        previous = (lat, lon)
 
-# Returns vehicle ids for HEV, PHEV and/or EV vehicles
-def getElectricVehIds(path: str = str(DATASETS / "eVED/static"), types: list[str] = ["HEV", "PHEV", "EV"]):
-    csvFiles = glob.glob(path + "/*.csv")
-    electricVehIds: list[float] = []
+    return distance
 
-    # Based on filename, read csv files and extract needed vehIds
-    for csv in csvFiles:
-        dataframe = pd.read_csv(csv)
-        staticFileName = os.path.splitext(os.path.basename(csv))[0]
+def findStops(trip: pd.DataFrame):
+    stops = []
 
-        match staticFileName:
-            case "VED_Static_Data_ICE&HEV":
-                if ("HEV" in types):
-                    electricVehIds.extend(
-                        dataframe.loc[
-                            dataframe["Vehicle Type"] == "HEV", "VehId"
-                        ].tolist()
-                    )
+    # Ensure records are ordered by timestamp
+    trip = trip.sort_values("Timestamp(ms)")
 
-            case "VED_Static_Data_PHEV&EV":
-                if ("PHEV" in types):
-                    electricVehIds.extend(
-                        dataframe.loc[
-                            dataframe["EngineType"] == "PHEV", "VehId"
-                        ].tolist()
-                    )
+    # Identify records where vehicle is stopped
+    stopped = trip["Vehicle Speed[km/h]"] == 0
 
-                if ("EV" in types):
-                    electricVehIds.extend(
-                        dataframe.loc[
-                            dataframe["EngineType"] == "EV", "VehId"
-                        ].tolist()
-                    )
+    # Create groups of consecutive stopped records
+    stopGroups = stopped.ne(stopped.shift()).cumsum()
 
-    return electricVehIds
+    for _, group in trip[stopped].groupby(stopGroups[stopped]):
+        startRecord = group.iloc[0]
+        endRecord = group.iloc[-1]
 
-# Returns dataset containing only electric vehicles (HEV, PHEV and/or EV) from eVED
-def getDatasetEV(path: str = str(DATASETS / "eVED"), include: list[str] = ["HEV", "PHEV", "EV"], entire: bool = True):
-    dataset = getDataset(path, entire)
-    electricVehIds: list[float] = getElectricVehIds(types=include)
+        stops.append({
+            "latitude": float(startRecord["Matchted Latitude[deg]"]),
+            "longitude": float(startRecord["Matched Longitude[deg]"]),
+            "duration": float((endRecord["Timestamp(ms)"] - startRecord["Timestamp(ms)"]) / 1000)
+        })
 
-    if (entire):
-        return dataset[dataset["VehId"].isin(electricVehIds)]
-    else:
-        return list(
-            map(
-                lambda datasetFile: DatasetFile(
-                    name=datasetFile.name,
-                    data=datasetFile.data[datasetFile.data["VehId"].isin(
-                        electricVehIds)]
-                ),
-                dataset
-            )
-        )
+    return stops
+
+def findWaypoints(trip: pd.DataFrame, maxWaypoints: int = 15):
+    records = trip.iloc[1:-1]
+
+    if records.empty:
+        return []
+
+    distance = calculateTripDistance(trip)
+
+    # One waypoint every 1000 meters, capped at 15
+    waypointCount = min(
+        maxWaypoints,
+        max(0, math.floor(distance / 1000))
+    )
+
+    if waypointCount == 0:
+        return []
+
+    interval = max(1, len(records) // waypointCount)
+
+    return [
+        {
+            "latitude": float(record["Matchted Latitude[deg]"]),
+            "longitude": float(record["Matched Longitude[deg]"]),
+        }
+        for _, record in records.iloc[::interval].head(waypointCount).iterrows()
+    ]

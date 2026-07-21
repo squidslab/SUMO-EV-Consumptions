@@ -25,6 +25,7 @@ def addSUMOTrips(sumoTrips: list[SUMOTrip]):
 
             "fromLonLat": sumoTrip.fromLonLat,
             "toLonLat": sumoTrip.toLonLat,
+            "viaLonLat": sumoTrip.viaLonLat,
         }
 
         if not math.isnan(sumoTrip.startSpeed):

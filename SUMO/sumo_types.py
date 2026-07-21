@@ -18,6 +18,7 @@ class SUMOTrip:
 
     fromLonLat: str
     toLonLat: str
+    viaLonLat: str
 
     startSpeed: float
     endSpeed: float

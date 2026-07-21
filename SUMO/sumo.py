@@ -24,6 +24,10 @@ def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], maxTr
 
             fromLonLat=f"{trip['startLongitude']},{trip['startLatitude']}",
             toLonLat=f"{trip['endLongitude']},{trip['endLatitude']}",
+            viaLonLat=" ".join(
+                f"{waypoint['longitude']},{waypoint['latitude']}"
+                for waypoint in trip["waypoints"]
+            ),
 
             startSpeed=trip["startSpeed"],
             endSpeed=trip["endSpeed"],

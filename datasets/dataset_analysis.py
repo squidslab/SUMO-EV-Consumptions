@@ -1,10 +1,12 @@
+import math
 import pandas as pd
 from datetime import datetime
 
-from datasets.dataset_utils import getDatasetEV
+from datasets.dataset_data import getDatasetEV
+from datasets.dataset_utils import calculateTripDistance, findStops, findWaypoints
 
 # Retrieve eVED, containing only electric vehicles
-eVEDFiles = getDatasetEV(entire=False)
+eVEDFiles = getDatasetEV(include=["EV"], entire=False)
 eVED = pd.concat(
     list(map(lambda datasetFile: datasetFile.data, eVEDFiles)),
     ignore_index=True
@@ -29,60 +31,60 @@ def getVehStats():
         samplesCount=("Trip", "size")
     ).reset_index()
 
-def findStops(trip: pd.DataFrame):
-    stops = []
+def getTripStats():
+    tripStats = []
 
-    # Ensure records are ordered by timestamp
-    trip = trip.sort_values("Timestamp(ms)")
+    for (vehId, tripId), trip in eVED.groupby(["VehId", "Trip"]):
+        tripStats.append({
+            "VehId": vehId,
+            "Trip": tripId,
 
-    # Identify records where vehicle is stopped
-    stopped = trip["Vehicle Speed[km/h]"] == 0
+            "totalEnergyConsumed": (
+                trip["Energy_Consumption"].sum() * 1000
+            ),
 
-    # Create groups of consecutive stopped records
-    stopGroups = stopped.ne(stopped.shift()).cumsum()
+            "startLatitude": (
+                trip["Matchted Latitude[deg]"].iloc[0]
+            ),
+            "startLongitude": (
+                trip["Matched Longitude[deg]"].iloc[0]
+            ),
 
-    for _, group in trip[stopped].groupby(stopGroups[stopped]):
-        startRecord = group.iloc[0]
-        endRecord = group.iloc[-1]
+            "endLatitude": (
+                trip["Matchted Latitude[deg]"].iloc[-1]
+            ),
+            "endLongitude": (
+                trip["Matched Longitude[deg]"].iloc[-1]
+            ),
 
-        stops.append({
-            "latitude": float(startRecord["Matchted Latitude[deg]"]),
-            "longitude": float(startRecord["Matched Longitude[deg]"]),
-            "duration": float((endRecord["Timestamp(ms)"] - startRecord["Timestamp(ms)"]) / 1000)
+            "startSpeed": (
+                trip["Vehicle Speed[km/h]"].iloc[0] / 3.6
+            ),
+            "endSpeed": (
+                trip["Vehicle Speed[km/h]"].iloc[-1] / 3.6
+            ),
+
+            "avgSpeed": (
+                trip["Vehicle Speed[km/h]"].mean() / 3.6
+            ),
+            "maxSpeed": (
+                trip["Vehicle Speed[km/h]"].max() / 3.6
+            ),
+
+            "distanceTraveled": (
+                calculateTripDistance(trip)
+            ),
+
+            "stops": (
+                findStops(trip)
+            ),
+
+            "waypoints": (
+                findWaypoints(trip)
+            )
         })
 
-    return stops
-
-def getTripStats():
-    # Calculate some statistics for each trip
-    tripStats = eVED.groupby(["VehId", "Trip"]).agg(
-        totalEnergyConsumed=(
-            "Energy_Consumption",
-            lambda energy: energy.sum() * 1000
-        ),
-
-        startLatitude=("Matchted Latitude[deg]", "first"),
-        startLongitude=("Matched Longitude[deg]", "first"),
-
-        endLatitude=("Matchted Latitude[deg]", "last"),
-        endLongitude=("Matched Longitude[deg]", "last"),
-
-        startSpeed=("Vehicle Speed[km/h]", lambda speed: speed.iloc[0] / 3.6),
-        endSpeed=("Vehicle Speed[km/h]", lambda speed: speed.iloc[-1] / 3.6),
-
-        avgSpeed=("Vehicle Speed[km/h]", lambda speed: speed.mean() / 3.6),
-        maxSpeed=("Vehicle Speed[km/h]", lambda speed: speed.max() / 3.6),
-    )
-
-    # Calculate stops for each trip
-    stops = (
-        eVED
-        .groupby(["VehId", "Trip"])
-        .apply(findStops)
-        .rename("stops")
-    )
-
-    return tripStats.join(stops).reset_index()
+    return pd.DataFrame(tripStats)
 
 def getDailyStats():
     # Convert DayNum values to integers, so that all samples belonging to the same day are grouped together

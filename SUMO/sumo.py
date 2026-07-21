@@ -5,12 +5,16 @@ from SUMO.sumo_types import SUMOTrip, SUMOVehicleExtraData
 from SUMO.sumo_processes import runDuarouter, runSUMO
 from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
-def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], maxTripDuration=math.ceil(getMaxTripDuration()) + 30):
+def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], maxTripDuration=None):
     sumoTrips: list[SUMOTrip] = []
     vehiclesExtra: dict[str, SUMOVehicleExtraData] = {}
 
     # Set currentDepart
     currentDepart: int = 0
+
+    # If it's None, set maxTripDuration using last simulation results
+    if maxTripDuration is None:
+        maxTripDuration = math.ceil(getMaxTripDuration()) + 30
 
     # Iterate over dataset trip records and for each generate SUMO trip data and SUMO vehicle extra data
     for trip in trips.to_dict(orient="records"):

@@ -128,6 +128,7 @@ def readSUMOBatteryOut():
 
     return batteryData
 
+# Reads custom.trips.xml, custom.rou.xml and tripinfos.xml to generate some stats about last simulation
 def getSUMOSimulationStats():
     # Count generated trips
     tripsXml = ET.parse(CUSTOM / "custom.trips.xml")

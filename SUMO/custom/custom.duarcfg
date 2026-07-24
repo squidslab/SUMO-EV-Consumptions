@@ -3,7 +3,7 @@
 <duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
-        <net-file value="../config/osm.net.xml.gz"/>
+        <net-file value="../config/osm_3D.net.xml.gz"/>
         <route-files value="./custom.trips.xml"/>
     </input>
 

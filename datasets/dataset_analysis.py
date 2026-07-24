@@ -24,6 +24,21 @@ def getDatasetStats():
         "maxLongitude": float(eVED["Matched Longitude[deg]"].max()),
     }
 
+def getElevationStats():
+    elevationStats = eVED[
+        [
+            "Matchted Latitude[deg]",
+            "Matched Longitude[deg]",
+            "Elevation Smoothed[m]",
+        ]
+    ].copy()
+
+    return {
+        (float(record["Matchted Latitude[deg]"]), float(record["Matched Longitude[deg]"])):
+        float(record["Elevation Smoothed[m]"])
+        for _, record in elevationStats.iterrows()
+    }
+
 def getVehStats():
     # Calculate number of trips per vehicle
     return eVED.groupby("VehId").agg(

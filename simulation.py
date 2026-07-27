@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from arguments import args
+
 from datasets.dataset_data import getElectricVehIds
 from datasets.dataset_analysis import getTripStats
 
@@ -45,19 +47,40 @@ MAE = comparisonData["absoluteError"].mean()
 # Root Mean Square Error: measures prediction error while penalizing larger deviations more heavily
 RMSE = np.sqrt(comparisonData["squaredError"].mean())
 
-# Mean Absolute Percentage Error: average percentage difference between SUMO and dataset energy consumption values
-# We filter out records with datasetEnergy at zero so we don't divide by it when calculating MAPE
-validDataForMAPE = comparisonData[comparisonData["datasetEnergy"] != 0]
+if "HEV" not in args.vehicle_types and "PHEV" not in args.vehicle_types:
+    # Mean Absolute Percentage Error: average percentage difference between SUMO and dataset energy consumption values
+    validDataForMAPE = comparisonData[comparisonData["datasetEnergy"] != 0]
 
-MAPE = (
-    validDataForMAPE["absoluteError"] /
-    validDataForMAPE["datasetEnergy"]
-).mean() * 100
+    MAPE = (
+        validDataForMAPE["absoluteError"] /
+        validDataForMAPE["datasetEnergy"]
+    ).mean() * 100
+else:
+    # Symmetric Mean Absolute Percentage Error: average symmetric percentage difference between SUMO and dataset energy consumption values
+    validDataForSMAPE = comparisonData[
+        (comparisonData["sumoEnergy"] != 0) |
+        (comparisonData["datasetEnergy"] != 0)
+    ]
 
+    SMAPE = (
+        2 *
+        validDataForSMAPE["absoluteError"] /
+        (
+            validDataForSMAPE["sumoEnergy"].abs() +
+            validDataForSMAPE["datasetEnergy"].abs()
+        )
+    ).mean() * 100
+
+# Print errors esteemation
 print("MAE:", MAE)
 print("RMSE:", RMSE)
-print("MAPE:", MAPE, "%")
 
+if "HEV" not in args.vehicle_types and "PHEV" not in args.vehicle_types:
+    print("MAPE:", MAPE, "%")
+else:
+    print("SMAPE:", SMAPE, "%")
+
+# Print simulation stats
 print("Generated trips:", SUMOSimStats.generatedTrips,
       "Generated vehicles:", SUMOSimStats.generatedVehicles,
       "Simulated vehicles:", SUMOSimStats.simulatedVehicles,

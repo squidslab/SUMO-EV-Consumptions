@@ -12,13 +12,14 @@
 
     <output>
         <tripinfo-output value="../output/tripinfos.xml"/>
-        <battery-output value="../output/battery.out.xml"/>
-        <battery-output.precision value="4"/>
+        <!-- <battery-output value="../output/battery.out.xml"/>
+        <battery-output.precision value="4"/> -->
     </output>
 
     <time>
         <step-length value="1.0"/>
         <!-- <step-length value="0.2"/> -->
+        <end value="35000.00"/>
     </time>
 
     <!-- <mesoscopic>

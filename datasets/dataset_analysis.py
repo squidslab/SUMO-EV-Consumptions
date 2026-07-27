@@ -1,12 +1,13 @@
-import math
 import pandas as pd
 from datetime import datetime
+
+from arguments import args
 
 from datasets.dataset_data import getDatasetEV
 from datasets.dataset_utils import calculateTripDistance, findStops, findWaypoints
 
 # Retrieve eVED, containing only electric vehicles
-eVEDFiles = getDatasetEV(include=["EV"], entire=False)
+eVEDFiles = getDatasetEV(include=args.vehicle_types, entire=False)
 eVED = pd.concat(
     list(map(lambda datasetFile: datasetFile.data, eVEDFiles)),
     ignore_index=True

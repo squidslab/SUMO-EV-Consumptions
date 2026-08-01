@@ -2,12 +2,15 @@ import os
 import glob
 import pandas as pd
 
-from datasets.dataset_paths import DATASETS
-from datasets.dataset_types import DatasetFile
+from data.dataset_paths import EVED, EVED_STATIC
+from data.validation.eVED_types import DatasetFile
 
-# Returns eVED using csv files at specified path. It can be returned as a whole dataframe or a list of dataframes for each csv file.
-def getDataset(path: str = str(DATASETS / "eVED"), entire: bool = True):
-    csvFiles = glob.glob(path + "/*.csv")
+eVEDPath = str(EVED)
+eVEDStaticPath = str(EVED_STATIC)
+
+# Returns eVED using csv files. It can be returned as a whole dataframe or a list of dataframes for each csv file.
+def getDataset(entire: bool = True):
+    csvFiles = glob.glob(eVEDPath + "/*.csv")
     datasetFiles: list[DatasetFile] = []
 
     # Read csv files, create a dataframe for each then append them in the datasetFiles list
@@ -30,8 +33,8 @@ def getDataset(path: str = str(DATASETS / "eVED"), entire: bool = True):
         return datasetFiles
 
 # Returns vehicle ids for HEV, PHEV and/or EV vehicles
-def getElectricVehIds(path: str = str(DATASETS / "eVED/static"), types: list[str] = ["HEV", "PHEV", "EV"]):
-    csvFiles = glob.glob(path + "/*.csv")
+def getElectricVehIds(types: list[str] = ["HEV", "PHEV", "EV"]):
+    csvFiles = glob.glob(eVEDStaticPath + "/*.csv")
     electricVehIds: list[float] = []
 
     # Based on filename, read csv files and extract needed vehIds
@@ -66,8 +69,8 @@ def getElectricVehIds(path: str = str(DATASETS / "eVED/static"), types: list[str
     return electricVehIds
 
 # Returns dataset containing only electric vehicles (HEV, PHEV and/or EV) from eVED
-def getDatasetEV(path: str = str(DATASETS / "eVED"), include: list[str] = ["HEV", "PHEV", "EV"], entire: bool = True):
-    dataset = getDataset(path, entire)
+def getDatasetEV(include: list[str] = ["HEV", "PHEV", "EV"], entire: bool = True):
+    dataset = getDataset(entire)
     electricVehIds: list[float] = getElectricVehIds(types=include)
 
     if (entire):

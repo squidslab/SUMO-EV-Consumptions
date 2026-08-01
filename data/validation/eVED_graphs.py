@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from datasets.dataset_analysis import getVehStats, getTripStats, getTripsWeeklyDistr
+from data.validation.eVED_analysis import getVehStats, getTripStats, getTripsWeeklyDistr
 
 vehStats = getVehStats()
 tripStats = getTripStats()
@@ -49,7 +49,7 @@ plt.show()
 # and potential outliers, enabling a direct comparison of energy usage patterns.
 tripStats.boxplot(
     column="totalEnergyConsumed",
-    by="VehId",
+    by="vehId",
     flierprops={"markersize": 3}
 ).set_xticklabels([])
 plt.xlabel("Vehicle")

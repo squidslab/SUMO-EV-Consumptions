@@ -1,7 +1,7 @@
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+SUMO = Path(__file__).parent
 
-CONFIG = ROOT / "config"
-CUSTOM = ROOT / "custom"
-OUTPUT = ROOT / "output"
+CONFIG = SUMO / "config"
+CUSTOM = SUMO / "custom"
+OUTPUT = SUMO / "output"

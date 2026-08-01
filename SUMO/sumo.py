@@ -5,29 +5,32 @@ from SUMO.sumo_types import SUMOTrip, SUMOVehicleExtraData
 from SUMO.sumo_processes import runDuarouter, runSUMO
 from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
-def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], maxTripDuration=None):
+def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], departDelay=None):
     sumoTrips: list[SUMOTrip] = []
     vehiclesExtra: dict[str, SUMOVehicleExtraData] = {}
 
     # Set currentDepart
     currentDepart: int = 0
 
-    # If it's None, set maxTripDuration using last simulation results
-    if maxTripDuration is None:
-        maxTripDuration = math.ceil(getMaxTripDuration()) + 30
+    # If it's None, set departDelay using last simulation max trip duration
+    if departDelay is None:
+        departDelay = math.ceil(getMaxTripDuration()) + 30
 
     # Iterate over dataset trip records and for each generate SUMO trip data and SUMO vehicle extra data
     for trip in trips.to_dict(orient="records"):
-        sumoVehicleId = f"{trip['VehId']}_{trip['Trip']}"
+        sumoVehicleId = trip["trajectoryId"]
+
+        startpoint = trip['startpoint']
+        endpoint = trip['endpoint']
 
         sumoTrips.append(SUMOTrip(
             id=sumoVehicleId,
-            type=SUMOvehicleTypes[trip['VehId']],
+            type=SUMOvehicleTypes[trip['vehId']],
 
             depart=currentDepart,
 
-            fromLonLat=f"{trip['startLongitude']},{trip['startLatitude']}",
-            toLonLat=f"{trip['endLongitude']},{trip['endLatitude']}",
+            fromLonLat=f"{startpoint['longitude']},{startpoint['latitude']}",
+            toLonLat=f"{endpoint['longitude']},{endpoint['latitude']}",
             viaLonLat=" ".join(
                 f"{waypoint['longitude']},{waypoint['latitude']}"
                 for waypoint in trip["waypoints"]
@@ -37,14 +40,11 @@ def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], maxTr
             endSpeed=trip["endSpeed"],
         ))
 
-        currentDepart += maxTripDuration
+        currentDepart += departDelay
 
         vehiclesExtra[sumoVehicleId] = SUMOVehicleExtraData(
-            startLatitude=trip["startLatitude"],
-            startLongitude=trip["startLongitude"],
-            endLatitude=trip["endLatitude"],
-            endLongitude=trip["endLongitude"],
-
+            startpoint=trip["startpoint"],
+            endpoint=trip["endpoint"],
             stops=trip["stops"]
         )
 

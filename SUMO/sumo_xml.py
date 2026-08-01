@@ -55,15 +55,15 @@ def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
 
         # Calculate precise departPos as an offset from the begginning of the lane closest to GPS point on the first edge
         departPos = getLanePositionOnEdge(
-            vehiclesExtra[sumoVehicleId].startLatitude,
-            vehiclesExtra[sumoVehicleId].startLongitude,
+            vehiclesExtra[sumoVehicleId].startpoint["latitude"],
+            vehiclesExtra[sumoVehicleId].startpoint["longitude"],
             edges[0]
         ).offset
 
         # Calculate precise arrivalPos as an offset from the begginning of the lane closest to GPS point on the last edge
         arrivalPos = getLanePositionOnEdge(
-            vehiclesExtra[sumoVehicleId].endLatitude,
-            vehiclesExtra[sumoVehicleId].endLongitude,
+            vehiclesExtra[sumoVehicleId].endpoint["latitude"],
+            vehiclesExtra[sumoVehicleId].endpoint["longitude"],
             edges[-1]
         ).offset
 

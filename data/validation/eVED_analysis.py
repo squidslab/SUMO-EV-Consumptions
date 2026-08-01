@@ -3,8 +3,8 @@ from datetime import datetime
 
 from arguments import args
 
-from datasets.dataset_data import getDatasetEV
-from datasets.dataset_utils import calculateTripDistance, findStops, findWaypoints
+from data.validation.eVED_data import getDatasetEV
+from data.validation.eVED_utils import findStops, findWaypoints
 
 # Retrieve eVED, containing only electric vehicles
 eVEDFiles = getDatasetEV(include=args.vehicle_types, entire=False)
@@ -52,52 +52,40 @@ def getTripStats():
 
     for (vehId, tripId), trip in eVED.groupby(["VehId", "Trip"]):
         tripStats.append({
-            "VehId": vehId,
-            "Trip": tripId,
+            "vehId": vehId,
+            "tripId": tripId,
 
-            "totalEnergyConsumed": (
-                trip["Energy_Consumption"].sum() * 1000
-            ),
+            "trajectoryId": f"{vehId}_{tripId}",
 
-            "startLatitude": (
-                trip["Matchted Latitude[deg]"].iloc[0]
-            ),
-            "startLongitude": (
-                trip["Matched Longitude[deg]"].iloc[0]
-            ),
+            "startpoint": {
+                "latitude": float(trip["Matchted Latitude[deg]"].iloc[0]),
+                "longitude": float(trip["Matched Longitude[deg]"].iloc[0]),
+            },
 
-            "endLatitude": (
-                trip["Matchted Latitude[deg]"].iloc[-1]
-            ),
-            "endLongitude": (
-                trip["Matched Longitude[deg]"].iloc[-1]
+            "endpoint": {
+                "latitude": float(trip["Matchted Latitude[deg]"].iloc[-1]),
+                "longitude": float(trip["Matched Longitude[deg]"].iloc[-1]),
+            },
+
+            "waypoints": (
+                findWaypoints(trip)
             ),
 
             "startSpeed": (
                 trip["Vehicle Speed[km/h]"].iloc[0] / 3.6
             ),
+
             "endSpeed": (
                 trip["Vehicle Speed[km/h]"].iloc[-1] / 3.6
-            ),
-
-            "avgSpeed": (
-                trip["Vehicle Speed[km/h]"].mean() / 3.6
-            ),
-            "maxSpeed": (
-                trip["Vehicle Speed[km/h]"].max() / 3.6
-            ),
-
-            "distanceTraveled": (
-                calculateTripDistance(trip)
             ),
 
             "stops": (
                 findStops(trip)
             ),
 
-            "waypoints": (
-                findWaypoints(trip)
-            )
+            "totalEnergyConsumed": (
+                trip["Energy_Consumption"].sum() * 1000
+            ),
         })
 
     return pd.DataFrame(tripStats)

@@ -25,11 +25,8 @@ class SUMOTrip:
 
 @dataclass
 class SUMOVehicleExtraData:
-    startLatitude: float
-    startLongitude: float
-    endLatitude: float
-    endLongitude: float
-
+    startpoint: dict[str, float]
+    endpoint: dict[str, float]
     stops: list[dict[str, float]]
 
 @dataclass

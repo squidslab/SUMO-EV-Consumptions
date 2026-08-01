@@ -1,12 +1,8 @@
-from datasets.dataset_analysis import getDatasetStats, getElevationStats
+from data.validation.eVED_analysis import getElevationStats
 
 from SUMO.sumo_utils import estimateSUMOElevationError
 
-datasetStats = getDatasetStats()
 elevationStats = getElevationStats()
-
-# Prints
-print(datasetStats)
 
 print("SUMO elevation error estimation: ")
 print("Number of records:", len(elevationStats))

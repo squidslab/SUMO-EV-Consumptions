@@ -18,20 +18,14 @@
 
     <time>
         <step-length value="1.0"/>
-        <!-- <step-length value="0.2"/> -->
-        <end value="35000.00"/>
+        <!-- <end value="35000.00"/> -->
     </time>
-
-    <!-- <mesoscopic>
-        <mesosim value="true"/>
-    </mesoscopic> -->
 
     <processing>
         <seed value="42"/>
         <threads value="1"/>
         <ignore-route-errors value="true"/>
         <tls.actuated.jam-threshold value="30"/>
-        <!-- <time-to-teleport value="300"/> -->
         <collision.action value="none"/>
     </processing>
 

@@ -4,13 +4,18 @@
         <param key="device.battery.capacity" value="21.400" />
     </vType>
 
+    <vType id="hev_generic" vClass="passenger" emissionClass="Energy" mass="2041.16" accel="2.5" decel="3.0" maxSpeed="160" sigma="1">
+        <param key="has.battery.device" value="true" />
+        <param key="device.battery.capacity" value="1500" />
+    </vType>
+    
     <vType id="phev_generic" vClass="passenger" emissionClass="Energy" mass="1814.37" accel="2.5" decel="3.0" maxSpeed="160" sigma="1">
         <param key="has.battery.device" value="true" />
         <param key="device.battery.capacity" value="10000" />
     </vType>
 
-    <vType id="hev_generic" vClass="passenger" emissionClass="Energy" mass="2041.16" accel="2.5" decel="3.0" maxSpeed="160" sigma="1">
+    <vType id="ev_generic" vClass="passenger" emissionClass="Energy" mass="1800" accel="2.5" decel="3.0" maxSpeed="160" sigma="1">
         <param key="has.battery.device" value="true" />
-        <param key="device.battery.capacity" value="1500" />
+        <param key="device.battery.capacity" value="60000" />
     </vType>
 </routes>

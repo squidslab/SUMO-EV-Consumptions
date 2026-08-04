@@ -3,7 +3,8 @@ from sumolib.net import readNet
 from sumolib.net.lane import Lane
 from sumolib.net.edge import Edge
 
-from SUMO.sumo_paths import CONFIG
+from paths import CONFIG
+
 from SUMO.sumo_types import LanePosition
 
 # Retrieve SUMO network
@@ -167,17 +168,14 @@ def getClosestLanePosition(lat: float, lon: float, radius: float = 30.0):
     )
 
 # Returns a map which associates every vehicle id with its sumo vehicle type
-def mapSUMOVehicleTypes(hevIds: list[float], phevIds: list[float], evIds: list[float]):
+def mapSUMOVehicleTypes(otherIds: list[float], evedEVIds: list[float] = []):
     SUMOvehicleTypes: dict[float, str] = {}
 
-    for vehId in hevIds:
-        SUMOvehicleTypes[vehId] = "hev_generic"
-
-    for vehId in phevIds:
-        SUMOvehicleTypes[vehId] = "phev_generic"
-
-    for vehId in evIds:
+    for vehId in evedEVIds:
         SUMOvehicleTypes[vehId] = "leaf_2013"
+
+    for vehId in otherIds:
+        SUMOvehicleTypes[vehId] = "ev_generic"
 
     return SUMOvehicleTypes
 

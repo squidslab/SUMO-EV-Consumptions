@@ -1,6 +1,6 @@
 import subprocess
 
-from SUMO.sumo_paths import CONFIG, CUSTOM
+from paths import CONFIG, CUSTOM
 
 def runDuarouter():
     try:

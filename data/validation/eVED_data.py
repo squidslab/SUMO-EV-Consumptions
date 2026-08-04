@@ -2,7 +2,8 @@ import os
 import glob
 import pandas as pd
 
-from data.dataset_paths import EVED, EVED_STATIC
+from paths import EVED, EVED_STATIC
+
 from data.validation.eVED_types import DatasetFile
 
 eVEDPath = str(EVED)

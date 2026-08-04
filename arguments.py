@@ -7,7 +7,7 @@ parser.add_argument(
     nargs="+",
     choices=["HEV", "PHEV", "EV"],
     default=["HEV", "PHEV", "EV"],
-    help="Vehicle types to include in the simulation"
+    help="Vehicle types to include in the simulation when using eVED"
 )
 
 parser.add_argument(

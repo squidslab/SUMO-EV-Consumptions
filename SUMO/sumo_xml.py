@@ -1,7 +1,8 @@
 import math
 import xml.etree.ElementTree as ET
 
-from SUMO.sumo_paths import CUSTOM, OUTPUT
+from paths import CUSTOM, OUTPUT
+
 from SUMO.sumo_types import SUMOTrip, SUMOVehicleExtraData, SUMOBatteryData, SUMOSimStats
 from SUMO.sumo_utils import getLanePositionOnEdge, getLanePositionFromEdgeList
 

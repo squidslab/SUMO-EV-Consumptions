@@ -25,7 +25,9 @@ def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], depar
 
         sumoTrips.append(SUMOTrip(
             id=sumoVehicleId,
-            type=SUMOvehicleTypes[trip['vehId']],
+            type=SUMOvehicleTypes.get(
+                trip.get("vehId") or trip.get("trajectoryId")
+            ),
 
             depart=currentDepart,
 

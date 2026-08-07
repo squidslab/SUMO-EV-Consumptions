@@ -2,9 +2,10 @@ import pandas as pd
 from datetime import datetime
 
 from arguments import args
+from custom_types import GPSPoint, TrajectorySample
 
+from data.utils import findStops, findWaypoints
 from data.validation.eVED_data import getDatasetEV
-from data.validation.eVED_utils import findStops, findWaypoints
 
 # Retrieve eVED, containing only electric vehicles
 eVEDFiles = getDatasetEV(include=args.vehicle_types, entire=False)
@@ -51,41 +52,38 @@ def getTripStats():
     tripStats = []
 
     for (vehId, tripId), trip in eVED.groupby(["VehId", "Trip"]):
+        TrajectorySamples = [
+            TrajectorySample(
+                point=GPSPoint(
+                    latitude=float(row["Matchted Latitude[deg]"]),
+                    longitude=float(row["Matched Longitude[deg]"])
+                ),
+                timestamp=float(row["Timestamp(ms)"]),
+                speed=float(row["Vehicle Speed[km/h]"] / 3.6)
+            )
+            for _, row in trip.iterrows()
+        ]
+
         tripStats.append({
             "vehId": vehId,
+
             "tripId": tripId,
 
             "trajectoryId": f"{vehId}_{tripId}",
 
-            "startpoint": {
-                "latitude": float(trip["Matchted Latitude[deg]"].iloc[0]),
-                "longitude": float(trip["Matched Longitude[deg]"].iloc[0]),
-            },
+            "startpoint": TrajectorySamples[0].point,
 
-            "endpoint": {
-                "latitude": float(trip["Matchted Latitude[deg]"].iloc[-1]),
-                "longitude": float(trip["Matched Longitude[deg]"].iloc[-1]),
-            },
+            "endpoint": TrajectorySamples[-1].point,
 
-            "waypoints": (
-                findWaypoints(trip)
-            ),
+            "waypoints": findWaypoints(TrajectorySamples),
 
-            "startSpeed": (
-                trip["Vehicle Speed[km/h]"].iloc[0] / 3.6
-            ),
+            "startSpeed": TrajectorySamples[0].speed,
 
-            "endSpeed": (
-                trip["Vehicle Speed[km/h]"].iloc[-1] / 3.6
-            ),
+            "endSpeed": TrajectorySamples[-1].speed,
 
-            "stops": (
-                findStops(trip)
-            ),
+            "stops": findStops(TrajectorySamples),
 
-            "totalEnergyConsumed": (
-                trip["Energy_Consumption"].sum() * 1000
-            ),
+            "totalEnergyConsumed": trip["Energy_Consumption"].sum() * 1000,
         })
 
     return pd.DataFrame(tripStats)

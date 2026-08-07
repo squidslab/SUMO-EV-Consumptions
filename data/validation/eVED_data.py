@@ -3,8 +3,7 @@ import glob
 import pandas as pd
 
 from paths import EVED, EVED_STATIC
-
-from data.validation.eVED_types import DatasetFile
+from custom_types import DatasetFile
 
 eVEDPath = str(EVED)
 eVEDStaticPath = str(EVED_STATIC)

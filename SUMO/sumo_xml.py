@@ -2,8 +2,8 @@ import math
 import xml.etree.ElementTree as ET
 
 from paths import CUSTOM, OUTPUT
+from custom_types import SUMOTrip, SUMOVehicleExtraData, SUMOBatteryData, SUMOSimStats
 
-from SUMO.sumo_types import SUMOTrip, SUMOVehicleExtraData, SUMOBatteryData, SUMOSimStats
 from SUMO.sumo_utils import getLanePositionOnEdge, getLanePositionFromEdgeList
 
 # Adds trips to custom.trips.xml
@@ -56,15 +56,15 @@ def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
 
         # Calculate precise departPos as an offset from the begginning of the lane closest to GPS point on the first edge
         departPos = getLanePositionOnEdge(
-            vehiclesExtra[sumoVehicleId].startpoint["latitude"],
-            vehiclesExtra[sumoVehicleId].startpoint["longitude"],
+            vehiclesExtra[sumoVehicleId].startpoint.latitude,
+            vehiclesExtra[sumoVehicleId].startpoint.longitude,
             edges[0]
         ).offset
 
         # Calculate precise arrivalPos as an offset from the begginning of the lane closest to GPS point on the last edge
         arrivalPos = getLanePositionOnEdge(
-            vehiclesExtra[sumoVehicleId].endpoint["latitude"],
-            vehiclesExtra[sumoVehicleId].endpoint["longitude"],
+            vehiclesExtra[sumoVehicleId].endpoint.latitude,
+            vehiclesExtra[sumoVehicleId].endpoint.longitude,
             edges[-1]
         ).offset
 
@@ -75,15 +75,15 @@ def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
         # Add each stop to the vehicle
         for stop in vehiclesExtra[sumoVehicleId].stops:
             stopLane = getLanePositionFromEdgeList(
-                stop["latitude"],
-                stop["longitude"],
+                stop.point.latitude,
+                stop.point.longitude,
                 edges
             ).lane.getID()
 
             vehicle.append(
                 ET.Element("stop", {
                     "lane": stopLane,
-                    "duration": str(stop["duration"])
+                    "duration": str(stop.duration)
                 })
             )
 

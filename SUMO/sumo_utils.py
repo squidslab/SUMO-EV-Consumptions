@@ -4,8 +4,7 @@ from sumolib.net.lane import Lane
 from sumolib.net.edge import Edge
 
 from paths import CONFIG
-
-from SUMO.sumo_types import LanePosition
+from custom_types import LanePosition
 
 # Retrieve SUMO network
 net = readNet(str(CONFIG / "osm_3D.net.xml.gz"))

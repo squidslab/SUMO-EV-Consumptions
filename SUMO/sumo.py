@@ -1,11 +1,11 @@
 import math
 import pandas as pd
 
-from SUMO.sumo_types import SUMOTrip, SUMOVehicleExtraData
+from custom_types import SUMOTrip, SUMOVehicleExtraData
 from SUMO.sumo_processes import runDuarouter, runSUMO
 from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
-def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], departDelay=None):
+def runSimulation(trips: pd.DataFrame, departDelay: float | None = None, SUMOvehicleTypes: dict[float, str] | None = None, ):
     sumoTrips: list[SUMOTrip] = []
     vehiclesExtra: dict[str, SUMOVehicleExtraData] = {}
 
@@ -25,16 +25,21 @@ def runSimulation(trips: pd.DataFrame, SUMOvehicleTypes: dict[float, str], depar
 
         sumoTrips.append(SUMOTrip(
             id=sumoVehicleId,
-            type=SUMOvehicleTypes.get(
-                trip.get("vehId") or trip.get("trajectoryId")
+            type=(
+                SUMOvehicleTypes.get(
+                    trip.get("vehId") or trip.get("trajectoryId"),
+                    "ev_generic"
+                )
+                if SUMOvehicleTypes is not None
+                else "ev_generic"
             ),
 
             depart=currentDepart,
 
-            fromLonLat=f"{startpoint['longitude']},{startpoint['latitude']}",
-            toLonLat=f"{endpoint['longitude']},{endpoint['latitude']}",
+            fromLonLat=f"{startpoint.longitude},{startpoint.latitude}",
+            toLonLat=f"{endpoint.longitude},{endpoint.latitude}",
             viaLonLat=" ".join(
-                f"{waypoint['longitude']},{waypoint['latitude']}"
+                f"{waypoint.longitude},{waypoint.latitude}"
                 for waypoint in trip["waypoints"]
             ),
 

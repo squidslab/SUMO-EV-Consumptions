@@ -2,6 +2,7 @@ import re
 import math
 import json
 from datetime import datetime
+from dataclasses import asdict
 
 import xml.etree.ElementTree as ET
 import pandas as pd
@@ -69,9 +70,12 @@ def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame):
             "tripAvgSpeed (m/s)": math.ceil(float(tripInfo.get("routeLength")) / float(tripInfo.get("duration")) * 100) / 100,
 
             "sourceDataset": "eVED",
-            "startpoint (lat, lon)": json.dumps(trajectory["startpoint"]),
-            "endpoint (lat, lon)": json.dumps(trajectory["endpoint"]),
-            "waypoints [(lat, lon)]": json.dumps(trajectory["waypoints"]),
+            "startpoint (lat, lon)": json.dumps(asdict(trajectory["startpoint"])),
+            "endpoint (lat, lon)": json.dumps(asdict(trajectory["endpoint"])),
+            "waypoints [(lat, lon)]": json.dumps([
+                asdict(waypoint)
+                for waypoint in trajectory["waypoints"]
+            ]),
 
             "batteryCapacity (Wh)": float(battery.get("actualBatteryCapacity", 0.0)),
             "energyConsumed (Wh)": float(battery.get("totalEnergyConsumed", 0.0)),

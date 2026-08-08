@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    "--vehicle-types",
+    "--eved-veh-types",
     nargs="+",
     choices=["HEV", "PHEV", "EV"],
     default=["HEV", "PHEV", "EV"],

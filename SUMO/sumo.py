@@ -1,7 +1,7 @@
 import math
 import pandas as pd
 
-from custom_types import SUMOTrip, SUMOVehicleExtraData
+from custom_types import GPSPoint, SUMOTrip, SUMOVehicleExtraData
 from SUMO.sumo_processes import runDuarouter, runSUMO
 from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
@@ -20,16 +20,15 @@ def runSimulation(trips: pd.DataFrame, departDelay: float | None = None, SUMOveh
     for trip in trips.to_dict(orient="records"):
         sumoVehicleId = trip["trajectoryId"]
 
-        startpoint = trip['startpoint']
-        endpoint = trip['endpoint']
+        startpoint: GPSPoint = trip['startpoint']
+        endpoint: GPSPoint = trip['endpoint']
+        waypoints: list[GPSPoint] = trip["waypoints"]
 
         sumoTrips.append(SUMOTrip(
             id=sumoVehicleId,
             type=(
-                SUMOvehicleTypes.get(
-                    trip.get("vehId") or trip.get("trajectoryId"),
-                    "ev_generic"
-                )
+                SUMOvehicleTypes.get(trip.get("trajectoryId"), "ev_generic")
+
                 if SUMOvehicleTypes is not None
                 else "ev_generic"
             ),
@@ -40,7 +39,7 @@ def runSimulation(trips: pd.DataFrame, departDelay: float | None = None, SUMOveh
             toLonLat=f"{endpoint.longitude},{endpoint.latitude}",
             viaLonLat=" ".join(
                 f"{waypoint.longitude},{waypoint.latitude}"
-                for waypoint in trip["waypoints"]
+                for waypoint in waypoints
             ),
 
             startSpeed=trip["startSpeed"],

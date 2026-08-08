@@ -8,7 +8,7 @@ from data.utils import findStops, findWaypoints
 from data.validation.eVED_data import getDatasetEV
 
 # Retrieve eVED, containing only electric vehicles
-eVEDFiles = getDatasetEV(include=args.vehicle_types, entire=False)
+eVEDFiles = getDatasetEV(include=args.eved_veh_types, entire=False)
 eVED = pd.concat(
     list(map(lambda datasetFile: datasetFile.data, eVEDFiles)),
     ignore_index=True

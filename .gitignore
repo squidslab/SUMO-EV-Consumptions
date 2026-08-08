@@ -3,6 +3,7 @@
 
 # Dataset files
 datasets/eVED/*.csv
+datasets/DLR_UT/*.csv
 
 # SUMO
 SUMO/config/

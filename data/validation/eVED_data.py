@@ -80,8 +80,9 @@ def getDatasetEV(include: list[str] = ["HEV", "PHEV", "EV"], entire: bool = True
             map(
                 lambda datasetFile: DatasetFile(
                     name=datasetFile.name,
-                    data=datasetFile.data[datasetFile.data["VehId"].isin(
-                        electricVehIds)]
+                    data=datasetFile.data[
+                        datasetFile.data["VehId"].isin(electricVehIds)
+                    ]
                 ),
                 dataset
             )

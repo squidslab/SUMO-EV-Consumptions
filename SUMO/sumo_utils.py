@@ -166,15 +166,15 @@ def getClosestLanePosition(lat: float, lon: float, radius: float = 30.0):
         edgeIds
     )
 
-# Returns a map which associates every vehicle id with its sumo vehicle type
+# Returns a map which associates every trajectory id with its sumo vehicle type
 def mapSUMOVehicleTypes(otherIds: list[float], evedEVIds: list[float] = []):
     SUMOvehicleTypes: dict[float, str] = {}
 
-    for vehId in evedEVIds:
-        SUMOvehicleTypes[vehId] = "leaf_2013"
+    for trajId in evedEVIds:
+        SUMOvehicleTypes[trajId] = "leaf_2013"
 
-    for vehId in otherIds:
-        SUMOvehicleTypes[vehId] = "ev_generic"
+    for trajId in otherIds:
+        SUMOvehicleTypes[trajId] = "ev_generic"
 
     return SUMOvehicleTypes
 

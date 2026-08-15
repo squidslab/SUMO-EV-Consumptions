@@ -12,6 +12,7 @@ from arguments import args
 from pathlib import Path
 from custom_types import GPSPoint
 
+# Run duarouter using correct duarcfg file
 def runDuarouter():
     customPath = VALIDATION_CUSTOM if args.validation else CUSTOM
 
@@ -28,6 +29,7 @@ def runDuarouter():
     except subprocess.CalledProcessError as duarError:
         print("DUAROUTER failed:", duarError)
 
+# Run SUMO using correct sumocfg file
 def runSUMO():
     configPath = VALIDATION_CONFIG if args.validation else CONFIG
     configFileName = "osm.sumocfg" if args.validation else "dataset.sumocfg"

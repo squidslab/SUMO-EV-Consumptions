@@ -35,14 +35,14 @@ parser.add_argument(
     "--eved-veh-types",
     nargs="+",
     choices=["ICE", "HEV", "PHEV", "EV"],
-    default=["ICE", "HEV", "PHEV", "EV"],
+    default=["HEV", "PHEV", "EV"],
     help="Vehicle types to include in the simulation when using eVED"
 )
 
 parser.add_argument(
     "--depart-delay",
     type=float,
-    default=None,
+    default=0,
     help="Delay between each simulated vehicle departure"
 )
 

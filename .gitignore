@@ -1,15 +1,65 @@
 # All CSV files
 *.csv
 
-# Dataset files
-datasets/eVED/*.csv
-datasets/DLR_UT/*.csv
-
-# SUMO
-SUMO/config/
-SUMO/custom/
-SUMO/output/
-
 # Python cache
 */__pycache__
 *.pyc
+
+# ENV file
+.env
+
+# Dataset files
+datasets/*
+
+# Keep datasets directory
+!datasets/.gitkeep
+
+# SUMO
+SUMO/sumo_files/*
+SUMO/sumo_files_validation/*
+
+# Ignore generated files inside SUMO directories
+SUMO/sumo_files/config/*
+SUMO/sumo_files/custom/*
+SUMO/sumo_files/output/*
+SUMO/sumo_files_validation/config/*
+SUMO/sumo_files_validation/custom/*
+SUMO/sumo_files_validation/output/*
+
+# Keep required SUMO configuration files
+!SUMO/sumo_files/config/
+!SUMO/sumo_files/config/dataset.sumocfg
+
+# Keep required SUMO custom files
+!SUMO/sumo_files/custom/
+!SUMO/sumo_files/custom/custom.duarcfg
+!SUMO/sumo_files/custom/vehicle_types.add.xml
+
+# Keep SUMO output directory
+!SUMO/sumo_files/output/
+!SUMO/sumo_files/output/.gitkeep
+
+# Keep required SUMO validation configuration files
+!SUMO/sumo_files_validation/config/
+!SUMO/sumo_files_validation/config/osm_3D.net.xml.gz
+!SUMO/sumo_files_validation/config/osm_bbox.osm.xml.gz
+!SUMO/sumo_files_validation/config/osm.net.xml.gz
+!SUMO/sumo_files_validation/config/osm.netccfg
+!SUMO/sumo_files_validation/config/osm.ogcfg
+!SUMO/sumo_files_validation/config/osm.sumocfg
+!SUMO/sumo_files_validation/config/osm.view.xml
+
+# Keep required SUMO validation custom files
+!SUMO/sumo_files_validation/custom/
+!SUMO/sumo_files_validation/custom/custom.duarcfg
+!SUMO/sumo_files_validation/custom/vehicle_types.add.xml
+
+# Keep SUMO validation output directory
+!SUMO/sumo_files_validation/output/
+!SUMO/sumo_files_validation/output/.gitkeep
+
+# Virtual datasets files
+virtual_datasets/*
+
+# Keep virtual_datasets directory
+!virtual_datasets/.gitkeep

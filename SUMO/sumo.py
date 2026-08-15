@@ -1,70 +1,85 @@
 import math
 import pandas as pd
 
+from arguments import args
 from custom_types import GPSPoint, SUMOTrip, SUMOVehicleExtraData
+
 from SUMO.sumo_processes import runDuarouter, runSUMO
-from SUMO.sumo_xml import addSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
+from SUMO.sumo_utils import loadSUMONetwork
+from SUMO.sumo_xml import setupConfigs, generateSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
-def runSimulation(trips: pd.DataFrame, departDelay: float | None = None, SUMOvehicleTypes: dict[float, str] | None = None, ):
-    sumoTrips: list[SUMOTrip] = []
-    vehiclesExtra: dict[str, SUMOVehicleExtraData] = {}
+def runSimulation(trajectories: pd.DataFrame, departDelay: float | None = None, SUMOvehicleTypes: dict[float, str] | None = None):
+    # If it is not a validation execution, configure both SUMO and duarouter config files
+    if not args.validation:
+        setupConfigs(args.dataset)
 
-    # Set currentDepart
-    currentDepart: int = 0
+    # Generate routes if requested
+    if (args.generate_ruotes):
+        sumoTrips: list[SUMOTrip] = []
+        vehiclesExtra: dict[str, SUMOVehicleExtraData] = {}
 
-    # If it's None, set departDelay using last simulation max trip duration
-    if departDelay is None:
-        departDelay = math.ceil(getMaxTripDuration()) + 30
+        # Set currentDepart
+        currentDepart: int = 0
 
-    # Iterate over dataset trip records and for each generate SUMO trip data and SUMO vehicle extra data
-    for trip in trips.to_dict(orient="records"):
-        sumoVehicleId = trip["trajectoryId"]
+        # If it's None, set departDelay using last simulation max trip duration
+        if departDelay is None:
+            departDelay = math.ceil(getMaxTripDuration()) + 30
 
-        startpoint: GPSPoint = trip['startpoint']
-        endpoint: GPSPoint = trip['endpoint']
-        waypoints: list[GPSPoint] = trip["waypoints"]
+        # Iterate over dataset trip records and for each generate SUMO trip data and SUMO vehicle extra data
+        for trajectory in trajectories.to_dict(orient="records"):
+            sumoVehicleId = trajectory["trajectoryId"]
 
-        sumoTrips.append(SUMOTrip(
-            id=sumoVehicleId,
-            type=(
-                SUMOvehicleTypes.get(trip.get("trajectoryId"), "ev_generic")
+            startpoint: GPSPoint = trajectory['startpoint']
+            endpoint: GPSPoint = trajectory['endpoint']
+            waypoints: list[GPSPoint] = trajectory["waypoints"]
 
-                if SUMOvehicleTypes is not None
-                else "ev_generic"
-            ),
+            sumoTrips.append(SUMOTrip(
+                id=sumoVehicleId,
+                type=(
+                    SUMOvehicleTypes.get(sumoVehicleId, "ev_generic")
 
-            depart=currentDepart,
+                    if SUMOvehicleTypes is not None
+                    else "ev_generic"
+                ),
 
-            fromLonLat=f"{startpoint.longitude},{startpoint.latitude}",
-            toLonLat=f"{endpoint.longitude},{endpoint.latitude}",
-            viaLonLat=" ".join(
-                f"{waypoint.longitude},{waypoint.latitude}"
-                for waypoint in waypoints
-            ),
+                depart=currentDepart,
 
-            startSpeed=trip["startSpeed"],
-            endSpeed=trip["endSpeed"],
-        ))
+                fromLonLat=f"{startpoint.longitude},{startpoint.latitude}",
+                toLonLat=f"{endpoint.longitude},{endpoint.latitude}",
+                viaLonLat=" ".join(
+                    f"{waypoint.longitude},{waypoint.latitude}"
+                    for waypoint in waypoints
+                ),
 
-        currentDepart += departDelay
+                startSpeed=trajectory["startSpeed"],
+                endSpeed=trajectory["endSpeed"],
+            ))
 
-        vehiclesExtra[sumoVehicleId] = SUMOVehicleExtraData(
-            startpoint=trip["startpoint"],
-            endpoint=trip["endpoint"],
-            stops=trip["stops"]
-        )
+            currentDepart += departDelay
 
-    # Add SUMO trips to custom.trips.xml
-    addSUMOTrips(sumoTrips)
+            vehiclesExtra[sumoVehicleId] = SUMOVehicleExtraData(
+                startpoint=trajectory["startpoint"],
+                endpoint=trajectory["endpoint"],
+                stops=trajectory["stops"]
+            )
 
-    # Run duarouter process to generate custom.rou.xml
-    runDuarouter()
+        # Load correct SUMO Network
+        loadSUMONetwork()
 
-    # Add some additional properties to SUMO vehicles into custom.rou.xml
-    addExtraToSUMOVehicles(vehiclesExtra)
+        # Generate custom.trips.xml containing SUMO trips
+        generateSUMOTrips(sumoTrips)
+
+        # Run duarouter process to generate custom.rou.xml
+        runDuarouter()
+
+        # Add some additional properties to SUMO vehicles into custom.rou.xml
+        addExtraToSUMOVehicles(vehiclesExtra)
 
     # Start SUMO simulation
     runSUMO()
 
-    # Return battery data output by reading tripinfos.xml and other statistics about simulation
-    return readSUMOBatteryOut(), getSUMOSimulationStats()
+    # If it was a validation execution, return battery data output by reading tripinfos.xml and other statistics about simulation
+    if (args.validation):
+        return readSUMOBatteryOut(), getSUMOSimulationStats()
+    else:
+        return

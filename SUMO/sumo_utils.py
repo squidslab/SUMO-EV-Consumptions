@@ -3,11 +3,20 @@ from sumolib.net import readNet
 from sumolib.net.lane import Lane
 from sumolib.net.edge import Edge
 
-from paths import CONFIG
+from paths import VALIDATION_CONFIG, CONFIG
+from arguments import args
 from custom_types import LanePosition
 
-# Retrieve SUMO network
-net = readNet(str(CONFIG / "osm_3D.net.xml.gz"))
+# Loads correct SUMO Network to achieve some calculations which requires reading it
+def loadSUMONetwork():
+    global net
+
+    netPath = str(
+        VALIDATION_CONFIG / "osm_3D.net.xml.gz" if args.validation
+        else CONFIG / args.dataset / f"{args.dataset}_3D.net.xml"
+    )
+
+    net = readNet(netPath)
 
 # Converts GPS coordinates to SUMO coordinate system
 def convertLonLatToSumoCoords(lat: float, lon: float):
@@ -170,11 +179,11 @@ def getClosestLanePosition(lat: float, lon: float, radius: float = 30.0):
 def mapSUMOVehicleTypes(otherIds: list[float], evedEVIds: list[float] = []):
     SUMOvehicleTypes: dict[float, str] = {}
 
-    for trajId in evedEVIds:
-        SUMOvehicleTypes[trajId] = "leaf_2013"
+    for trajectoryId in evedEVIds:
+        SUMOvehicleTypes[trajectoryId] = "leaf_2013"
 
-    for trajId in otherIds:
-        SUMOvehicleTypes[trajId] = "ev_generic"
+    for trajectoryId in otherIds:
+        SUMOvehicleTypes[trajectoryId] = "ev_generic"
 
     return SUMOvehicleTypes
 

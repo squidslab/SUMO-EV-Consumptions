@@ -3,22 +3,21 @@ import math
 import json
 from datetime import datetime
 from dataclasses import asdict
-
 import xml.etree.ElementTree as ET
 import pandas as pd
 
 from pathlib import Path
 from paths import VIRTUAL_DATASETS
 
-def generateVirtualDatasetId():
+def generateVirtualDatasetId(source: str):
     # Get current date in YYYYMMDD format
     date = datetime.now().strftime("%Y%m%d")
 
     # Search for existing datasets generated today
-    pattern = re.compile(rf"{date}_(\d{{3}})\.csv")
+    pattern = re.compile(rf"{date}_{source}_(\d{{3}})\.csv")
 
     simulationNumbers = []
-    for dataset in VIRTUAL_DATASETS.glob(f"{date}_*.csv"):
+    for dataset in VIRTUAL_DATASETS.glob(f"{date}_{source}_*.csv"):
         match = pattern.match(dataset.name)
 
         if match:
@@ -27,12 +26,12 @@ def generateVirtualDatasetId():
     # Generate the next progressive number
     nextNumber = max(simulationNumbers, default=0) + 1
 
-    return f"{date}_{nextNumber:03d}"
+    return f"{date}_{source}_{nextNumber:03d}"
 
 # Generates a virtual dataset from SUMO tripinfo.xml obtained from a simulation
-def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame):
+def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame, sourceDataset: str):
     # Parse SUMO tripinfos.xml at given path
-    tripInfosXml = ET.parse(tripInfosPath)
+    tripInfosXml = ET.parse(tripInfosPath / "tripinfos.xml")
     tripInfos = tripInfosXml.getroot()
 
     # Create a dictionary using trajectoryId and retrieve the original trajectory metadata using the same id found in tripinfos.xml
@@ -69,7 +68,6 @@ def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame):
             "tripDistance (m)": float(tripInfo.get("routeLength", 0.0)),
             "tripAvgSpeed (m/s)": math.ceil(float(tripInfo.get("routeLength")) / float(tripInfo.get("duration")) * 100) / 100,
 
-            "sourceDataset": "eVED",
             "startpoint (lat, lon)": json.dumps(asdict(trajectory["startpoint"])),
             "endpoint (lat, lon)": json.dumps(asdict(trajectory["endpoint"])),
             "waypoints [(lat, lon)]": json.dumps([
@@ -87,7 +85,7 @@ def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame):
 
     # Save virtual dataset as CSV
     virtualDataset.to_csv(
-        VIRTUAL_DATASETS / f"{generateVirtualDatasetId()}.csv",
+        VIRTUAL_DATASETS / f"{generateVirtualDatasetId(sourceDataset)}.csv",
         index=False
     )
 

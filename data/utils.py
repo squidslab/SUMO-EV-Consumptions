@@ -119,6 +119,35 @@ def findWaypoints(TrajectorySamples: list[TrajectorySample], maxWaypoints: int =
         for sample in intermediateSamples[::interval][:waypointCount]
     ]
 
+def getTrajectoriesBounds(trajectories: list[Trajectory]) -> tuple[GPSPoint, GPSPoint]:
+    minLat = float("inf")
+    minLon = float("inf")
+    maxLat = float("-inf")
+    maxLon = float("-inf")
+
+    for trajectory in trajectories:
+        for sample in trajectory.samples:
+            latitude = sample.point.latitude
+            longitude = sample.point.longitude
+
+            minLat = min(minLat, latitude)
+            minLon = min(minLon, longitude)
+
+            maxLat = max(maxLat, latitude)
+            maxLon = max(maxLon, longitude)
+
+    minGPSPoint = GPSPoint(
+        latitude=minLat,
+        longitude=minLon
+    )
+
+    maxGPSPoint = GPSPoint(
+        latitude=maxLat,
+        longitude=maxLon
+    )
+
+    return (minGPSPoint, maxGPSPoint)
+
 def buildTrajectoryDataframe(trajectories: list[Trajectory], includeSpeedData: bool = False) -> pd.DataFrame:
     SUMOTrajectories = []
 

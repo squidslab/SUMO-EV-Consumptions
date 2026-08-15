@@ -1,31 +1,30 @@
-from pathlib import Path
-
-import pandas as pd
 import glob
+import pandas as pd
 import os
 
+from pathlib import Path
 from custom_types import GPSPoint, TrajectorySample, Trajectory
 
 from data.trajectory_parser.interface import TrajectoryParser
 
 class EVEDParser(TrajectoryParser):
 
-    def __init__(self, staticPath: Path, vehicleTypes: list[str] = ["HEV", "PHEV", "EV"]):
+    def __init__(self, staticPath: Path, vehicleTypes: list[str] = ["ICE", "HEV", "PHEV", "EV"]):
         self.staticPath = staticPath
         self.vehicleTypes = vehicleTypes
 
     def parse(self, path: Path) -> list[Trajectory]:
-        # Rerieve dataset and electric vehicles ids
+        # Rerieve dataset and vehicles ids for requested types
         dataset = self.loadDataset(path)
-        electricVehIds = self.getElectricVehicleIds()
+        vehIds = self.getVehicleIds()
 
-        # Select only electric vehicles from dataset then sort it to order data correctly
-        dataset = dataset[dataset["VehId"].isin(electricVehIds)]
+        # Select only vehicles for requested types from dataset then sort it to order data correctly
+        dataset = dataset[dataset["VehId"].isin(vehIds)]
         dataset = dataset.sort_values(
             ["DayNum", "VehId", "Trip", "Timestamp(ms)"]
         )
 
-        # Build trajectories from dataset then return it
+        # Build trajectories from dataset then return them
         return self.buildTrajectories(dataset)
 
     def loadDataset(self, path: Path) -> pd.DataFrame:
@@ -39,9 +38,9 @@ class EVEDParser(TrajectoryParser):
 
         return pd.concat(datasets, ignore_index=True)
 
-    def getElectricVehicleIds(self) -> list[float]:
+    def getVehicleIds(self) -> list[float]:
         csvFiles = glob.glob(str(self.staticPath / "*.csv"))
-        electricVehIds = []
+        vehIds = []
 
         for csv in csvFiles:
             dataframe = pd.read_csv(csv)
@@ -49,8 +48,15 @@ class EVEDParser(TrajectoryParser):
 
             match filename:
                 case "VED_Static_Data_ICE&HEV":
+                    if "ICE" in self.vehicleTypes:
+                        vehIds.extend(
+                            dataframe.loc[
+                                dataframe["Vehicle Type"] == "ICE", "VehId"
+                            ].tolist()
+                        )
+
                     if "HEV" in self.vehicleTypes:
-                        electricVehIds.extend(
+                        vehIds.extend(
                             dataframe.loc[
                                 dataframe["Vehicle Type"] == "HEV", "VehId"
                             ].tolist()
@@ -58,26 +64,26 @@ class EVEDParser(TrajectoryParser):
 
                 case "VED_Static_Data_PHEV&EV":
                     if "PHEV" in self.vehicleTypes:
-                        electricVehIds.extend(
+                        vehIds.extend(
                             dataframe.loc[
                                 dataframe["EngineType"] == "PHEV", "VehId"
                             ].tolist()
                         )
 
                     if "EV" in self.vehicleTypes:
-                        electricVehIds.extend(
+                        vehIds.extend(
                             dataframe.loc[
                                 dataframe["EngineType"] == "EV", "VehId"
                             ].tolist()
                         )
 
-        return electricVehIds
+        return vehIds
 
     def buildTrajectories(self, dataset: pd.DataFrame) -> list[Trajectory]:
         trajectories: list[Trajectory] = []
 
         for (vehId, tripId), trip in dataset.groupby(["VehId", "Trip"]):
-            TrajectorySamples = [
+            trajectorySamples = [
                 TrajectorySample(
                     point=GPSPoint(
                         latitude=float(row["Matchted Latitude[deg]"]),
@@ -92,7 +98,7 @@ class EVEDParser(TrajectoryParser):
             trajectories.append(
                 Trajectory(
                     trajectoryId=f"{vehId}_{tripId}",
-                    samples=TrajectorySamples
+                    samples=trajectorySamples
                 )
             )
 

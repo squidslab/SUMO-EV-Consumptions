@@ -1,28 +1,37 @@
-from paths import EVED, EVED_STATIC, OUTPUT
+import time
+
+from dotenv import load_dotenv
+
 from arguments import args
 
-from data.utils import buildTrajectoryDataframe
-from data.trajectory_parser.eved_parser import EVEDParser
+from SUMO.sumo_validation import runSUMOvalidation
 
-from SUMO.sumo_utils import mapSUMOVehicleTypes
-from SUMO.sumo import runSimulation
+from pipelines.eVED_pipeline import runEVEDPipeline
+from pipelines.DLR_pipeline import runDLRPipeline
 
-from virtual_data.dataset_generation import generateVirtualDataset
+# Load env configuration
+load_dotenv()
 
-# Initialize dataset parser
-parser = EVEDParser(staticPath=EVED_STATIC, vehicleTypes=args.eved_veh_types)
+# Initialize timer
+start = time.perf_counter()
 
-# Retrieve data about trajectories from dataset at given path by parsing it using initialized parser
-trajectories = parser.parse(EVED)
+# If validation execution has been set, run it then quit.
+if args.validation:
+    runSUMOvalidation()
+    quit()
 
-# Build trajectory as dataframe so it is suitable for SUMO simulation function
-SUMOtrajectories = buildTrajectoryDataframe(trajectories, True)
+# Select pipeline to exectue based on given settings
+match args.dataset:
+    case "eVED":
+        runEVEDPipeline()
+    case "DLR":
+        runDLRPipeline()
+    case _:
+        print("Invalid dataset!")
+        quit()
 
-# Run SUMO simulation
-runSimulation(SUMOtrajectories, args.depart_delay)
-
-# Generate virtual dataset using simulation results
-generateVirtualDataset(OUTPUT / "tripinfos.xml", SUMOtrajectories)
 
 # Print
-print("Virtual dataset generated!")
+print(
+    f"\rVirtual dataset generated in {time.perf_counter() - start:.2f}s"
+)

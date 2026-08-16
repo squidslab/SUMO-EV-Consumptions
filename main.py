@@ -30,7 +30,6 @@ match args.dataset:
         print("Invalid dataset!")
         quit()
 
-
 # Print
 print(
     f"\rVirtual dataset generated in {time.perf_counter() - start:.2f}s"

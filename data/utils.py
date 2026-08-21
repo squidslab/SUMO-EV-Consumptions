@@ -148,6 +148,12 @@ def getTrajectoriesBounds(trajectories: list[Trajectory]) -> tuple[GPSPoint, GPS
 
     return (minGPSPoint, maxGPSPoint)
 
+def getTrajectoryBatch(trajectories: list[Trajectory], batch: int) -> list[Trajectory]:
+    start = (batch - 1) * 15000
+    end = start + 15000
+
+    return trajectories[start:end]
+
 def buildTrajectoryDataframe(trajectories: list[Trajectory], includeSpeedData: bool = False) -> pd.DataFrame:
     SUMOTrajectories = []
 

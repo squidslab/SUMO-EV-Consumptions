@@ -1,7 +1,8 @@
+import pandas as pd
+
 from dataclasses import dataclass
 from sumolib.net.lane import Lane
 from sumolib.net.edge import Edge
-import pandas as pd
 
 @dataclass
 class DatasetFile:
@@ -22,7 +23,7 @@ class StopPoint:
 class TrajectorySample:
     point: GPSPoint
     timestamp: float | None = None  # Milliseconds
-    speed: float | None = None
+    speed: float | None = None  # Meters per second
 
 @dataclass
 class Trajectory:

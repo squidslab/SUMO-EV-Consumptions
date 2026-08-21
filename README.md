@@ -244,8 +244,8 @@ For example:
 match args.dataset:
     case "eVED":
         runEVEDPipeline(...)
-    case "DLR":
-        runDLRPipeline(...)
+    case "pNEUMA":
+        runPNEUMAPipeline()
 ```
 
 When adding a new dataset, remember to:
@@ -301,7 +301,7 @@ python main.py --dataset eVED
 or:
 
 ```bash
-python main.py --dataset DLR
+python main.py --dataset pNEUMA
 ```
 
 depending on the datasets currently integrated into the project.
@@ -347,6 +347,32 @@ python main.py --dataset eVED --skip-net-generation --skip-route-generation
 
 ---
 
+## `--trajectory-batch`
+
+Specifies which batch of trajectories should be processed.
+
+The tool processes trajectories in batches of **15,000 trajectories** by default. This allows large trajectory datasets to be processed through multiple executions, keeping individual simulation times more manageable.
+
+The argument specifies the batch number:
+
+* `1` — first 15,000 trajectories
+* `2` — trajectories 15,001–30,000
+* `3` — trajectories 30,001–45,000
+* and so on.
+
+For example:
+
+```bash
+python main.py --dataset eVED --trajectory-batch 2
+```
+
+This processes the second batch of 15,000 trajectories.
+The default value is `1`, meaning that the first batch is processed when no value is explicitly specified.
+If the selected batch contains fewer than 15,000 remaining trajectories, all remaining trajectories are processed.
+This option is particularly useful for generating a virtual dataset in multiple smaller executions, which can subsequently be combined into a larger dataset.
+
+---
+
 ## `--eved-veh-types`
 
 Specifies which vehicle types should be extracted when running the eVED pipeline or in validation mode.
@@ -358,7 +384,10 @@ The supported vehicle types are:
 * `PHEV` — Plug-in Hybrid Electric Vehicle
 * `EV` — Electric Vehicle
 
-For example:
+When running in validation mode, the ICE vehicle type is ignored even if specified, since validation is only supported for HEV, PHEV, and EV vehicles.
+Using EV is recommended for validation, as it provides the most direct comparison for electric-vehicle consumption.
+
+For example, to process only electric vehicles:
 
 ```bash
 python main.py --dataset eVED --eved-veh-types EV
@@ -416,6 +445,24 @@ python main.py --dataset eVED --skip-net-generation
 ```bash
 python main.py --dataset eVED --skip-net-generation --skip-route-generation
 ```
+
+### Process a specific trajectory batch
+
+```bash
+python main.py --dataset eVED --trajectory-batch 2
+```
+
+This processes the second batch of 15,000 trajectories.
+
+### Combine trajectory batching with other options
+
+For example:
+
+```bash
+python main.py --dataset eVED --trajectory-batch 3 --skip-net-generation
+```
+
+This processes the third trajectory batch while reusing an already generated SUMO network.
 
 ### Run SUMO validation
 
@@ -531,10 +578,13 @@ where the filename identifies the generation date, source dataset and generated 
 | `--dataset`               | Select the trajectory dataset                   |
 | `--skip-net-generation`   | Reuse an existing SUMO 3D network               |
 | `--skip-route-generation` | Reuse existing SUMO routes                      |
+| `--trajectory-batch`      | Select the 15,000-trajectory batch to process   |
 | `--eved-veh-types`        | Select ICE/HEV/PHEV/EV vehicles when using eVED |
 | `--depart-delay`          | Set the departure delay between generated trips |
 
 The `--skip-net-generation` and `--skip-route-generation` options can be combined. `--skip-route-generation` should not be used alone because route generation depends on the network being available.
+
+`--trajectory-batch` defaults to `1` and can be used to divide large trajectory datasets into multiple batches of 15,000 trajectories.
 
 ## Author
 

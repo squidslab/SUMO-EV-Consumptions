@@ -9,6 +9,8 @@ from data.validation.eVED_analysis import getTripStats
 from SUMO.sumo_utils import mapSUMOVehicleTypes
 from SUMO.sumo import runSimulation
 
+from virtual_data.simulation_results import printSimulationStats, printValidationErrors
+
 def runSUMOvalidation():
     # Retrive data about trips from dataset
     trips = getTripStats()
@@ -55,44 +57,39 @@ def runSUMOvalidation():
     MAE = comparisonData["absoluteError"].mean()
 
     # Root Mean Square Error: measures prediction error while penalizing larger deviations more heavily
-    RMSE = np.sqrt(comparisonData["squaredError"].mean())
+    RMSE = float(np.sqrt(comparisonData["squaredError"].mean()))
 
-    if "HEV" not in args.eved_veh_types and "PHEV" not in args.eved_veh_types:
-        # Mean Absolute Percentage Error: average percentage difference between SUMO and dataset energy consumption values
-        validDataForMAPE = comparisonData[comparisonData["datasetEnergy"] != 0]
-
-        MAPE = (
-            validDataForMAPE["absoluteError"] /
-            validDataForMAPE["datasetEnergy"]
-        ).mean() * 100
-    else:
-        # Symmetric Mean Absolute Percentage Error: average symmetric percentage difference between SUMO and dataset energy consumption values
-        validDataForSMAPE = comparisonData[
+    # Calculate MAPE or SMAPE based on vehicle types used for validation
+    if "HEV" in args.eved_veh_types or "PHEV" in args.eved_veh_types:
+        validData = comparisonData[
             (comparisonData["sumoEnergy"] != 0) |
             (comparisonData["datasetEnergy"] != 0)
         ]
 
+        MAPE = None
+
+        # Symmetric Mean Absolute Percentage Error: average symmetric percentage difference between SUMO and dataset energy consumption values
         SMAPE = (
             2 *
-            validDataForSMAPE["absoluteError"] /
+            validData["absoluteError"] /
             (
-                validDataForSMAPE["sumoEnergy"].abs() +
-                validDataForSMAPE["datasetEnergy"].abs()
+                validData["sumoEnergy"].abs() +
+                validData["datasetEnergy"].abs()
             )
         ).mean() * 100
-
-    # Print errors esteemation
-    print("MAE:", MAE)
-    print("RMSE:", RMSE)
-
-    if "HEV" not in args.eved_veh_types and "PHEV" not in args.eved_veh_types:
-        print("MAPE:", MAPE, "%")
     else:
-        print("SMAPE:", SMAPE, "%")
+        validData = comparisonData[comparisonData["datasetEnergy"] != 0]
+
+        # Mean Absolute Percentage Error: average percentage difference between SUMO and dataset energy consumption values
+        MAPE = (
+            validData["absoluteError"] /
+            validData["datasetEnergy"]
+        ).mean() * 100
+
+        SMAPE = None
+
+    # Print validation errors
+    printValidationErrors(MAE, RMSE, MAPE, SMAPE)
 
     # Print simulation stats
-    print("Generated trips:", SUMOSimStats.generatedTrips,
-          "Generated vehicles:", SUMOSimStats.generatedVehicles,
-          "Simulated vehicles:", SUMOSimStats.simulatedVehicles,
-          "Trips discarded:", SUMOSimStats.discardedByDuarouter,
-          "Vehicles failed:", SUMOSimStats.failedSimulation)
+    printSimulationStats(SUMOSimStats)

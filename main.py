@@ -8,6 +8,7 @@ from SUMO.sumo_validation import runSUMOvalidation
 
 from pipelines.eVED_pipeline import runEVEDPipeline
 from pipelines.DLR_pipeline import runDLRPipeline
+from pipelines.pNEUMA_pipeline import runPNEUMAPipeline
 
 # Load env configuration
 load_dotenv()
@@ -24,13 +25,15 @@ if args.validation:
 match args.dataset:
     case "eVED":
         runEVEDPipeline()
+    case "pNEUMA":
+        runPNEUMAPipeline()
     case "DLR":
         runDLRPipeline()
     case _:
         print("Invalid dataset!")
         quit()
 
-# Print
+# Log virtual dataset generation info
 print(
-    f"\rVirtual dataset generated in {time.perf_counter() - start:.2f}s"
+    f"\r\nVirtual dataset generated in {time.perf_counter() - start:.2f}s"
 )

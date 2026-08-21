@@ -9,7 +9,7 @@ from SUMO.sumo_utils import loadSUMONetwork
 from SUMO.sumo_xml import setupConfigs, generateSUMOTrips, addExtraToSUMOVehicles, getMaxTripDuration, readSUMOBatteryOut, getSUMOSimulationStats
 
 def runSimulation(trajectories: pd.DataFrame, departDelay: float | None = None, SUMOvehicleTypes: dict[float, str] | None = None):
-    # If it is not a validation execution, configure both SUMO and duarouter config files
+    # Configure both SUMO and duarouter config files if not in validation mode
     if not args.validation:
         setupConfigs(args.dataset)
 
@@ -78,8 +78,5 @@ def runSimulation(trajectories: pd.DataFrame, departDelay: float | None = None, 
     # Start SUMO simulation
     runSUMO()
 
-    # If it was a validation execution, return battery data output by reading tripinfos.xml and other statistics about simulation
-    if (args.validation):
-        return readSUMOBatteryOut(), getSUMOSimulationStats()
-    else:
-        return
+    # Return battery data output by reading tripinfos.xml and other statistics about simulation
+    return readSUMOBatteryOut(), getSUMOSimulationStats()

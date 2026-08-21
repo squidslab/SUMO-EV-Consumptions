@@ -1,13 +1,14 @@
 from paths import EVED, EVED_STATIC, OUTPUT
 from arguments import args
 
-from data.utils import getTrajectoriesBounds, buildTrajectoryDataframe
+from data.utils import getTrajectoriesBounds, getTrajectoryBatch, buildTrajectoryDataframe
 from data.trajectory_parser.eVED_parser import EVEDParser
 
 from SUMO.sumo_processes import generateSUMO3DNet
 from SUMO.sumo_utils import mapSUMOVehicleTypes
 from SUMO.sumo import runSimulation
 
+from virtual_data.simulation_results import printSimulationStats
 from virtual_data.dataset_generation import generateVirtualDataset
 
 def runEVEDPipeline():
@@ -18,12 +19,21 @@ def runEVEDPipeline():
     )
 
     # Retrieve data about trajectories from eVED
-    trajectories = parser.parse(EVED)
+    eVEDTrajectories = parser.parse(EVED)
 
-    # Generate SUMO 3D Net using dataset bounds obtained via trajectories data
+    # Generate SUMO 3D Net using dataset bounds obtained via trajectories data if requested
     if args.generate_net:
-        minGPSPoint, maxGPSPoint = getTrajectoriesBounds(trajectories)
+        minGPSPoint, maxGPSPoint = getTrajectoriesBounds(eVEDTrajectories)
         generateSUMO3DNet(minGPSPoint, maxGPSPoint, args.dataset)
+
+    # Retrieve trajectory batch to process (15,000 trajectories per batch)
+    trajectories = getTrajectoryBatch(eVEDTrajectories, args.trajectory_batch)
+
+    # Log trajectory batch info
+    print(
+        f"Processing trajectory batch {args.trajectory_batch}: "
+        f"{len(trajectories)} trajectories"
+    )
 
     # Build trajectories as dataframe so it is suitable for SUMO simulation function
     SUMOtrajectories = buildTrajectoryDataframe(trajectories, True)
@@ -45,7 +55,12 @@ def runEVEDPipeline():
     SUMOvehicleTypes = mapSUMOVehicleTypes(otherTrajectoryIds, EVTrajectoryIds)
 
     # Run SUMO simulation
-    runSimulation(SUMOtrajectories, args.depart_delay, SUMOvehicleTypes)
+    _, SUMOSimStats = runSimulation(
+        SUMOtrajectories, args.depart_delay, SUMOvehicleTypes
+    )
+
+    # Log simulation stats
+    printSimulationStats(SUMOSimStats)
 
     # Generate virtual dataset using simulation results
     generateVirtualDataset(

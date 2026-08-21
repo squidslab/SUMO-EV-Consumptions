@@ -32,6 +32,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--trajectory-batch",
+    type=int,
+    default=1,
+    help="Trajectory batch to process (15,000 trajectories per batch)"
+)
+
+parser.add_argument(
     "--eved-veh-types",
     nargs="+",
     choices=["ICE", "HEV", "PHEV", "EV"],

@@ -409,6 +409,38 @@ This option only applies to the eVED dataset.
 
 ---
 
+## `--random-veh-types`
+
+Randomly assigns SUMO electric vehicle models to trajectories whose original vehicle model is unknown.
+
+```bash
+python main.py --dataset eVED --random-veh-types
+```
+
+By default, trajectories with an unknown vehicle model are assigned the generic SUMO electric vehicle type `ev_generic`.
+
+When `--random-veh-types` is enabled, these trajectories are instead assigned one of the available specific electric vehicle models:
+
+* `tesla_model_y`
+* `tesla_model_3`
+* `chevrolet_equinox_ev`
+* `ford_mustang_mach_e`
+* `hyundai_ioniq_5`
+
+The assignment is randomized while keeping the distribution of vehicle models as balanced as possible. Therefore, the number of trajectories assigned to each model differs by at most one.
+
+This option only affects trajectories for which the original vehicle model is unknown. Electric vehicles from eVED with a known electric-vehicle classification continue to use the `leaf_2013` SUMO vehicle type.
+
+The option is **disabled by default**. When it is not specified, unknown vehicle models are assigned `ev_generic`.
+
+For example:
+
+```bash
+python main.py --dataset eVED --random-veh-types
+```
+
+---
+
 ## `--depart-delay`
 
 Specifies the delay in seconds between the departure times of generated SUMO trips.
@@ -463,6 +495,15 @@ python main.py --dataset eVED --trajectory-batch 3 --skip-net-generation
 ```
 
 This processes the third trajectory batch while reusing an already generated SUMO network.
+
+### Randomize unknown vehicle types
+
+```bash
+python main.py --dataset eVED --random-veh-types
+```
+
+This randomly assigns specific SUMO electric vehicle models to trajectories whose original vehicle model is unknown, while keeping the distribution of the models balanced.
+Without this option, such trajectories use the generic `ev_generic` SUMO vehicle type.
 
 ### Run SUMO validation
 
@@ -572,21 +613,25 @@ where the filename identifies the generation date, source dataset and generated 
 
 # Quick reference
 
-| Argument                  | Purpose                                         |
-| ------------------------- | ----------------------------------------------- |
-| `--validation`            | Run the SUMO validation workflow                |
-| `--dataset`               | Select the trajectory dataset                   |
-| `--skip-net-generation`   | Reuse an existing SUMO 3D network               |
-| `--skip-route-generation` | Reuse existing SUMO routes                      |
-| `--trajectory-batch`      | Select the 15,000-trajectory batch to process   |
-| `--eved-veh-types`        | Select ICE/HEV/PHEV/EV vehicles when using eVED |
-| `--depart-delay`          | Set the departure delay between generated trips |
+| Argument                  | Purpose                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------- |
+| `--validation`            | Run the SUMO validation workflow                                                    |
+| `--dataset`               | Select the trajectory dataset                                                       |
+| `--skip-net-generation`   | Reuse an existing SUMO 3D network                                                   |
+| `--skip-route-generation` | Reuse existing SUMO routes                                                          |
+| `--trajectory-batch`      | Select the 15,000-trajectory batch to process                                       |
+| `--eved-veh-types`        | Select ICE/HEV/PHEV/EV vehicles when using eVED                                     |
+| `--random-veh-types`      | Randomly assign balanced SUMO EV models to trajectories with unknown vehicle models |
+| `--depart-delay`          | Set the departure delay between generated trips                                     |
 
 The `--skip-net-generation` and `--skip-route-generation` options can be combined. `--skip-route-generation` should not be used alone because route generation depends on the network being available.
 
 `--trajectory-batch` defaults to `1` and can be used to divide large trajectory datasets into multiple batches of 15,000 trajectories.
 
-## Author
+`--random-veh-types` is disabled by default. When enabled, unknown vehicle models are assigned specific SUMO electric vehicle models in a randomized but balanced distribution instead of using the generic `ev_generic` type.
 
-**Giuseppe Tarallo**  
+# Author
+
+**Giuseppe Tarallo**
+
 University of Naples Federico II

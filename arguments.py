@@ -47,6 +47,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--random-veh-types",
+    action="store_true",
+    help="Randomly assign SUMO electric vehicle types to trajectories with unknown vehicle models -"
+    "By default, these trajectories are assigned to a generic electric vehicle type"
+)
+
+parser.add_argument(
     "--depart-delay",
     type=float,
     default=0,

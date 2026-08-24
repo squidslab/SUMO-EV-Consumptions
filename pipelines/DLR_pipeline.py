@@ -5,6 +5,7 @@ from data.utils import getTrajectoriesBounds, getTrajectoryBatch, buildTrajector
 from data.trajectory_parser.DLR_parser import DLRParser
 
 from SUMO.sumo_processes import generateSUMO3DNet
+from SUMO.sumo_utils import mapSUMOVehicleTypes
 from SUMO.sumo import runSimulation
 
 from virtual_data.simulation_results import printSimulationStats
@@ -34,8 +35,18 @@ def runDLRPipeline():
     # Build trajectory as dataframe so it is suitable for SUMO simulation function
     SUMOtrajectories = buildTrajectoryDataframe(trajectories, True)
 
+    # Retrieve trajectory ids for each trajectory
+    trajectoryIds = SUMOtrajectories["trajectoryId"].unique().tolist()
+
+    # Retrieve SUMO vehicle types map
+    SUMOvehicleTypes = mapSUMOVehicleTypes(
+        trajectoryIds, randomize=args.random_veh_types
+    )
+
     # Run SUMO simulation
-    _, SUMOSimStats = runSimulation(SUMOtrajectories, args.depart_delay)
+    _, SUMOSimStats = runSimulation(
+        SUMOtrajectories, args.depart_delay, SUMOvehicleTypes
+    )
 
     # Log simulation stats
     printSimulationStats(SUMOSimStats)

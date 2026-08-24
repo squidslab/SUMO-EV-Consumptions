@@ -52,7 +52,9 @@ def runEVEDPipeline():
             otherTrajectoryIds.append(trajectoryId)
 
     # Retrieve SUMO vehicle types map
-    SUMOvehicleTypes = mapSUMOVehicleTypes(otherTrajectoryIds, EVTrajectoryIds)
+    SUMOvehicleTypes = mapSUMOVehicleTypes(
+        otherTrajectoryIds, EVTrajectoryIds, randomize=args.random_veh_types
+    )
 
     # Run SUMO simulation
     _, SUMOSimStats = runSimulation(

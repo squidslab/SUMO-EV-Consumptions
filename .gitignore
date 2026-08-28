@@ -28,7 +28,7 @@ SUMO/sumo_files_validation/output/*
 
 # Keep required SUMO configuration files
 !SUMO/sumo_files/config/
-!SUMO/sumo_files/config/dataset.sumocfg
+!SUMO/sumo_files/config/scenario.sumocfg
 
 # Keep required SUMO custom files
 !SUMO/sumo_files/custom/

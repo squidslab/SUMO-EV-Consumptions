@@ -1,0 +1,26 @@
+{
+    "Naples, Italy": {
+        "minLatitude": 40.791193,
+        "minLongitude": 14.1320999,
+        "maxLatitude": 40.916123,
+        "maxLongitude": 14.3537681
+    },
+    "Rome, Italy": {
+        "minLatitude": 41.6556417,
+        "minLongitude": 12.2344669,
+        "maxLatitude": 42.1410285,
+        "maxLongitude": 12.8557603
+    },
+    "Turin, Italy": {
+        "minLatitude": 45.0067924,
+        "minLongitude": 7.5778348,
+        "maxLatitude": 45.1402175,
+        "maxLongitude": 7.7733388
+    },
+    "Palermo, Italy": {
+        "minLatitude": 38.0499137,
+        "minLongitude": 13.242219,
+        "maxLatitude": 38.2245866,
+        "maxLongitude": 13.4520856
+    }
+}

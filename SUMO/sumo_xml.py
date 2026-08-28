@@ -1,35 +1,26 @@
-import math
 import shutil
+import math
 import xml.etree.ElementTree as ET
 
-from paths import VALIDATION_CONFIG, VALIDATION_CUSTOM, VALIDATION_OUTPUT, CONFIG, CUSTOM, OUTPUT
 from arguments import args
 from custom_types import SUMOTrip, SUMOVehicleExtraData, SUMOBatteryData, SUMOSimStats
 
-from SUMO.sumo_utils import getLanePositionOnEdge, getLanePositionFromEdgeList
+from SUMO.sumo_paths import configPath, customPath, outputPath
+from SUMO.sumo_utils import getLanePositionOnEdge, getLanePositionFromEdgeList, mapSUMOVehicleTypes
 
-configPath = VALIDATION_CONFIG if args.validation else CONFIG
-customPath = VALIDATION_CUSTOM if args.validation else CUSTOM
-outputPath = VALIDATION_OUTPUT if args.validation else OUTPUT
+# Sets up SUMO config files based on the specified scenario
+def setupSUMOConfig():
+    scenarioName = args.scenario_name
 
-# Setup both SUMO and duarouter config files based on the specified dataset
-def setupConfigs(datasetName: str = "dataset"):
-    datasetCustomPath = customPath / datasetName
-    datasetOutputPath = outputPath / datasetName
+    sumoConfigFilePath = configPath / "scenario.sumocfg"
+    scenarioOutputPath = outputPath / scenarioName
 
-    # Recreate dataset-specific directories
-    for path in [datasetCustomPath, datasetOutputPath]:
-        if path.exists():
-            shutil.rmtree(path)
+    # Remove scenario-specific output directory if it exists
+    if scenarioOutputPath.exists():
+        shutil.rmtree(scenarioOutputPath)
 
-        path.mkdir(parents=True)
-
-    setupSUMOConfig(datasetName)
-    setupDuarouterConfig(datasetName)
-
-# Sets up SUMO config files based on the specified dataset
-def setupSUMOConfig(datasetName: str = "dataset"):
-    sumoConfigFilePath = configPath / "dataset.sumocfg"
+    # Create scenario-specific output directory
+    scenarioOutputPath.mkdir(parents=True)
 
     # Parse SUMO configuration
     sumoConfigFile = ET.parse(sumoConfigFilePath)
@@ -40,38 +31,39 @@ def setupSUMOConfig(datasetName: str = "dataset"):
     outputConfig = sumoConfiguration.find("./output")
 
     if inputConfig is None:
-        raise RuntimeError("Could not find input section in dataset.sumocfg")
+        raise RuntimeError("Could not find input section in scenario.sumocfg")
 
     if outputConfig is None:
-        raise RuntimeError("Could not find output section in dataset.sumocfg")
+        raise RuntimeError("Could not find output section in scenario.sumocfg")
 
     netFile = inputConfig.find("./net-file")
     routeFiles = inputConfig.find("./route-files")
     tripInfoOutput = outputConfig.find("./tripinfo-output")
 
     if netFile is None:
-        raise RuntimeError("Could not find net-file in dataset.sumocfg")
+        raise RuntimeError("Could not find net-file in scenario.sumocfg")
 
     if routeFiles is None:
-        raise RuntimeError("Could not find route-files in dataset.sumocfg")
+        raise RuntimeError("Could not find route-files in scenario.sumocfg")
 
     if tripInfoOutput is None:
-        raise RuntimeError("Could not find tripinfo-output in dataset.sumocfg")
+        raise RuntimeError(
+            "Could not find tripinfo-output in scenario.sumocfg")
 
-    # Configure dataset-specific paths
+    # Configure scenario-specific paths
     netFile.set(
         "value",
-        f"./{datasetName}/{datasetName}_3D.net.xml"
+        f"./{scenarioName}/{scenarioName}_3D.net.xml"
     )
 
     routeFiles.set(
         "value",
-        f"../custom/{datasetName}/custom.rou.xml"
+        f"../custom/{scenarioName}/custom.rou.xml"
     )
 
     tripInfoOutput.set(
         "value",
-        f"../output/{datasetName}/tripinfos.xml"
+        f"../output/{scenarioName}/tripinfos.xml"
     )
 
     # Save updated configuration
@@ -81,9 +73,19 @@ def setupSUMOConfig(datasetName: str = "dataset"):
         xml_declaration=True
     )
 
-# Sets up duarouter config file based on specified dataset
-def setupDuarouterConfig(datasetName: str = "dataset"):
+# Sets up duarouter config file based on specified scenario
+def setupDuarouterConfig():
+    scenarioName = args.scenario_name
+
     duarouterConfigFilePath = customPath / "custom.duarcfg"
+    scenarioCustomPath = customPath / scenarioName
+
+    # Remove scenario-specific custom directory if it exists
+    if scenarioCustomPath.exists():
+        shutil.rmtree(scenarioCustomPath)
+
+    # Create scenario-specific custom directory
+    scenarioCustomPath.mkdir(parents=True)
 
     # Parse duarouter configuration
     duarouterConfigFile = ET.parse(duarouterConfigFilePath)
@@ -108,15 +110,15 @@ def setupDuarouterConfig(datasetName: str = "dataset"):
     if outputFile is None:
         raise RuntimeError("Could not find output-file in custom.duarcfg")
 
-    # Configure dataset-specific paths
+    # Configure scenario-specific paths
     netFile.set(
         "value",
-        f"../config/{datasetName}/{datasetName}_3D.net.xml"
+        f"../config/{scenarioName}/{scenarioName}_3D.net.xml"
     )
 
     outputFile.set(
         "value",
-        f"./{datasetName}/custom.rou.xml"
+        f"./{scenarioName}/custom.rou.xml"
     )
 
     # Save updated configuration
@@ -128,15 +130,15 @@ def setupDuarouterConfig(datasetName: str = "dataset"):
 
 # Generate custom.trips.xml and add trips to it
 def generateSUMOTrips(sumoTrips: list[SUMOTrip]):
-    customTripsPath = customPath / "custom.trips.xml"
+    customTripsFilePath = customPath / "custom.trips.xml"
 
     # Remove previous trip generation if present
-    if customTripsPath.exists():
-        customTripsPath.unlink()
+    if customTripsFilePath.exists():
+        customTripsFilePath.unlink()
 
     # Create new trips file
     routes = ET.Element("routes")
-    customTripsXml = ET.ElementTree(routes)
+    customTripsFile = ET.ElementTree(routes)
 
     # Generate sumo trips
     for sumoTrip in sumoTrips:
@@ -159,22 +161,21 @@ def generateSUMOTrips(sumoTrips: list[SUMOTrip]):
 
         routes.append(ET.Element("trip", attributes))
 
-    customTripsXml.write(
-        customTripsPath,
+    customTripsFile.write(
+        customTripsFilePath,
         encoding="utf-8",
         xml_declaration=True,
     )
 
 # Adds some additional properties to vehicles into custom.rou.xml
 def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
-    customRoutesXmlPath = (
-        customPath / "custom.rou.xml"
-        if args.validation
-        else customPath / args.dataset / "custom.rou.xml"
+    customRoutesFilePath = (
+        customPath / "custom.rou.xml" if args.validation
+        else customPath / args.scenario_name / "custom.rou.xml"
     )
 
-    customRoutesXml = ET.parse(customRoutesXmlPath)
-    routes = customRoutesXml.getroot()
+    customRoutesFile = ET.parse(customRoutesFilePath)
+    routes = customRoutesFile.getroot()
 
     # Iterate over each vehicle inside routes element
     for vehicle in routes.findall("vehicle"):
@@ -215,8 +216,43 @@ def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
                 })
             )
 
-    customRoutesXml.write(
-        customRoutesXmlPath,
+    customRoutesFile.write(
+        customRoutesFilePath,
+        encoding="utf-8",
+        xml_declaration=True,
+    )
+
+# Adds missing depart times and vehicle types to randomly generated vehicles into custom.rou.xml
+def finalizeRandomSUMOVehicles(randomizeVehTypes: bool, departDelay: float):
+    customRoutesFilePath = (
+        customPath / "custom.rou.xml" if args.validation
+        else customPath / args.scenario_name / "custom.rou.xml"
+    )
+
+    customRoutesFile = ET.parse(customRoutesFilePath)
+    routes = customRoutesFile.getroot()
+    vehicles = routes.findall("vehicle")
+
+    # Assign a SUMO vehicle type to each vehicle into custom.rou.xml
+    vehicleIds = [vehicle.get("id")for vehicle in vehicles]
+
+    SUMOvehicleTypes = mapSUMOVehicleTypes(
+        vehicleIds, randomize=randomizeVehTypes
+    )
+
+    # Set current depart
+    currentDepart: float = 0.00
+
+    # Iterate over each vehicle and assign type and depart
+    for vehicle in vehicles:
+        vehicle.set("type", SUMOvehicleTypes[vehicle.get("id")])
+        vehicle.set("depart", str(currentDepart))
+
+        # Increment current depart based on specified delay
+        currentDepart += departDelay
+
+    customRoutesFile.write(
+        customRoutesFilePath,
         encoding="utf-8",
         xml_declaration=True,
     )
@@ -224,8 +260,8 @@ def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
 # Returns the duration of the longest trip resulted after a simulation
 def getMaxTripDuration():
     try:
-        tripInfosXml = ET.parse(outputPath / "tripinfos.xml")
-        tripinfos = tripInfosXml.getroot()
+        tripInfosFile = ET.parse(outputPath / "tripinfos.xml")
+        tripinfos = tripInfosFile.getroot()
 
         maxDuration = None
 
@@ -242,14 +278,13 @@ def getMaxTripDuration():
 # Reads tripinfos.xml to return resulting battery data generated by a simulation
 def readSUMOBatteryOut():
     batteryData: dict[str, SUMOBatteryData] = {}
-    tripInfosXmlPath = (
-        outputPath / "tripinfos.xml"
-        if args.validation
-        else outputPath / args.dataset / "tripinfos.xml"
+    tripInfosFilePath = (
+        outputPath / "tripinfos.xml" if args.validation
+        else outputPath / args.scenario_name / "tripinfos.xml"
     )
 
-    tripInfosXml = ET.parse(tripInfosXmlPath)
-    tripinfos = tripInfosXml.getroot()
+    tripInfosFile = ET.parse(tripInfosFilePath)
+    tripinfos = tripInfosFile.getroot()
 
     for tripinfo in tripinfos.findall("tripinfo"):
         tripinfoId = tripinfo.get("id")
@@ -264,33 +299,34 @@ def readSUMOBatteryOut():
 
 # Reads custom.trips.xml, custom.rou.xml and tripinfos.xml to generate some stats about last simulation
 def getSUMOSimulationStats():
-    tripsXmlPath = customPath / "custom.trips.xml"
-
-    routesXmlPath = (
-        customPath / "custom.rou.xml"
-        if args.validation
-        else customPath / args.dataset / "custom.rou.xml"
+    customTripsFilePath = (
+        customPath / "custom.trips.xml" if args.scenario == "dataset"
+        else customPath / "trips.trips.xml"
     )
 
-    tripInfosXmlPath = (
-        outputPath / "tripinfos.xml"
-        if args.validation
-        else outputPath / args.dataset / "tripinfos.xml"
+    customRoutesFilePath = (
+        customPath / "custom.rou.xml" if args.validation
+        else customPath / args.scenario_name / "custom.rou.xml"
+    )
+
+    tripInfosFilePath = (
+        outputPath / "tripinfos.xml" if args.validation
+        else outputPath / args.scenario_name / "tripinfos.xml"
     )
 
     # Count generated trips
-    tripsXml = ET.parse(tripsXmlPath)
-    trips = tripsXml.getroot().findall("trip")
+    customTripsFile = ET.parse(customTripsFilePath)
+    trips = customTripsFile.getroot().findall("trip")
     generatedTrips = len(trips)
 
     # Count vehicles generated by duarouter
-    routesXml = ET.parse(routesXmlPath)
-    vehicles = routesXml.getroot().findall("vehicle")
+    customRoutesFile = ET.parse(customRoutesFilePath)
+    vehicles = customRoutesFile.getroot().findall("vehicle")
     generatedVehicles = len(vehicles)
 
     # Count vehicles actually simulated
-    tripInfosXml = ET.parse(tripInfosXmlPath)
-    tripinfos = tripInfosXml.getroot().findall("tripinfo")
+    tripInfosFile = ET.parse(tripInfosFilePath)
+    tripinfos = tripInfosFile.getroot().findall("tripinfo")
     simulatedVehicles = len(tripinfos)
 
     return SUMOSimStats(

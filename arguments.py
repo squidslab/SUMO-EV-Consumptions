@@ -5,14 +5,25 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--validation",
     action="store_true",
-    help="Run SUMO validation - This config doesn't require a set database since it always uses eVED"
+    help="Run SUMO validation "
+         "This config doesn't require a set database since it always uses eVED"
 )
 
 parser.add_argument(
-    "--dataset",
+    "--scenario",
     type=str,
-    default=None,
-    help="Trajectory dataset to use for the simulation"
+    choices=["dataset", "city"],
+    default="dataset",
+    help="Specify the simulation scenario type: 'dataset' for a trajectory dataset or 'city' for a city"
+)
+
+parser.add_argument(
+    "--scenario-name",
+    type=str,
+    default="eVED",
+    help="Name of the simulation scenario: a trajectory dataset or a city "
+         "For cities, it is recommended to use the format 'Naples, Italy' "
+         "When a city is specified, random trajectories are generated within its area"
 )
 
 parser.add_argument(
@@ -35,7 +46,16 @@ parser.add_argument(
     "--trajectory-batch",
     type=int,
     default=1,
-    help="Trajectory batch to process (15,000 trajectories per batch)"
+    help="Batch of trajectories to process (15,000 trajectories per batch) "
+         "Only applicable to the 'dataset' scenario"
+)
+
+parser.add_argument(
+    "--trajectories-number",
+    type=int,
+    default=5000,
+    help="Number of random trajectories to generate "
+         "Only applicable to the 'city' scenario"
 )
 
 parser.add_argument(
@@ -49,8 +69,8 @@ parser.add_argument(
 parser.add_argument(
     "--random-veh-types",
     action="store_true",
-    help="Randomly assign SUMO electric vehicle types to trajectories with unknown vehicle models -"
-    "By default, these trajectories are assigned to a generic electric vehicle type"
+    help="Randomly assign SUMO electric vehicle types to trajectories with unknown vehicle models "
+         "By default, these trajectories are assigned to a generic electric vehicle type"
 )
 
 parser.add_argument(

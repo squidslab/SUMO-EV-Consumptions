@@ -1,12 +1,11 @@
-from paths import PNEUMA, OUTPUT
 from arguments import args
+from paths import PNEUMA, OUTPUT
 
 from data.utils import getTrajectoriesBounds, getTrajectoryBatch, buildTrajectoryDataframe
 from data.trajectory_parser.pNEUMA_parser import pNEUMAParser
 
-from SUMO.sumo_processes import generateSUMO3DNet
 from SUMO.sumo_utils import mapSUMOVehicleTypes
-from SUMO.sumo import runSimulation
+from SUMO.sumo import generateSUMO3DNet, generateRoutes, runSimulation
 
 from virtual_data.simulation_results import printSimulationStats
 from virtual_data.dataset_generation import generateVirtualDataset
@@ -19,43 +18,42 @@ def runPNEUMAPipeline():
     pNEUMATrajectories = parser.parse(PNEUMA)
 
     # Generate SUMO 3D Net using dataset bounds obtained via trajectories data if requested
-    if args.generate_net:
+    if args.generate_net and args.generate_ruotes:
         minGPSPoint, maxGPSPoint = getTrajectoriesBounds(pNEUMATrajectories)
-        generateSUMO3DNet(minGPSPoint, maxGPSPoint, args.dataset)
+        generateSUMO3DNet(minGPSPoint, maxGPSPoint)
 
     # Retrieve trajectory batch to process (15,000 trajectories per batch)
-    trajectories = getTrajectoryBatch(
+    trajectoryBatch = getTrajectoryBatch(
         pNEUMATrajectories, args.trajectory_batch
     )
 
-    # Log trajectory batch info
-    print(
-        f"Processing trajectory batch {args.trajectory_batch}: "
-        f"{len(trajectories)} trajectories"
-    )
-
     # Build trajectory as dataframe so it is suitable for SUMO simulation function
-    SUMOtrajectories = buildTrajectoryDataframe(trajectories, True)
+    SUMOtrajectories = buildTrajectoryDataframe(trajectoryBatch, True)
 
-    # Retrieve trajectory ids for each trajectory
-    trajectoryIds = SUMOtrajectories["trajectoryId"].unique().tolist()
+    # Generate SUMO routes using trajectories data if requested
+    if args.generate_ruotes:
+        # Retrieve trajectory ids for each trajectory
+        trajectoryIds = SUMOtrajectories["trajectoryId"].unique().tolist()
 
-    # Retrieve SUMO vehicle types map
-    SUMOvehicleTypes = mapSUMOVehicleTypes(
-        trajectoryIds, randomize=args.random_veh_types
-    )
+        # Retrieve SUMO vehicle types map
+        SUMOvehicleTypes = mapSUMOVehicleTypes(
+            trajectoryIds, randomize=args.random_veh_types
+        )
+
+        # Generate SUMO routes
+        generateRoutes(
+            SUMOtrajectories, SUMOvehicleTypes, args.depart_delay
+        )
 
     # Run SUMO simulation
-    _, SUMOSimStats = runSimulation(
-        SUMOtrajectories, args.depart_delay, SUMOvehicleTypes
-    )
+    _, SUMOSimStats = runSimulation()
 
     # Log simulation stats
     printSimulationStats(SUMOSimStats)
 
     # Generate virtual dataset using simulation results
     generateVirtualDataset(
-        OUTPUT / args.dataset,
-        SUMOtrajectories,
-        args.dataset
+        OUTPUT / args.scenario_name,
+        args.scenario_name,
+        SUMOtrajectories
     )

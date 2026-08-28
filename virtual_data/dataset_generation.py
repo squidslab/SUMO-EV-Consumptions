@@ -29,28 +29,37 @@ def generateVirtualDatasetId(source: str):
     return f"{date}_{source}_{nextNumber:03d}"
 
 # Generates a virtual dataset from SUMO tripinfo.xml obtained from a simulation
-def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame, sourceDataset: str):
+def generateVirtualDataset(tripInfosFilePath: Path, sourceScenario: str, trajectories: pd.DataFrame | None = None):
     # Parse SUMO tripinfos.xml at given path
-    tripInfosXml = ET.parse(tripInfosPath / "tripinfos.xml")
-    tripInfos = tripInfosXml.getroot()
+    tripInfosFile = ET.parse(tripInfosFilePath / "tripinfos.xml")
+    tripInfos = tripInfosFile.getroot()
 
-    # Create a dictionary using trajectoryId and retrieve the original trajectory metadata using the same id found in tripinfos.xml
-    trajectoryMetadata = {
-        trajectory['trajectoryId']: trajectory
-        for trajectory in trajectories.to_dict(orient="records")
-    }
+    # Create trajectory metadata dictionary if original trajectories are available
+    trajectoryMetadata = (
+        {
+            trajectory['trajectoryId']: trajectory
+            for trajectory in trajectories.to_dict(orient="records")
+        }
+        if trajectories is not None
+        else None
+    )
 
+    # Records to generate for virtual database
     virtualTrips = []
 
     # Extract data for each simulated trip
     for tripInfo in tripInfos.findall("tripinfo"):
         trajectoryId = tripInfo.get("id")
 
-        # Retrieve original trajectory metadata
-        trajectory = trajectoryMetadata.get(trajectoryId)
+        # Retrieve original trajectory metadata if available
+        trajectory = (
+            trajectoryMetadata.get(trajectoryId)
+            if trajectoryMetadata is not None
+            else None
+        )
 
         # Skip trips for which the original trajectory metadata cannot be found
-        if trajectory is None:
+        if trajectories is not None and trajectory is None:
             continue
 
         # Retrieve battery info
@@ -60,7 +69,8 @@ def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame, sour
         if battery is None:
             continue
 
-        virtualTrips.append({
+        # Add simulation-generated data
+        virtualTrip = {
             "trajectoryId": trajectoryId,
             "vehicleType": tripInfo.get("vType"),
 
@@ -68,24 +78,33 @@ def generateVirtualDataset(tripInfosPath: Path, trajectories: pd.DataFrame, sour
             "tripDistance (m)": float(tripInfo.get("routeLength", 0.0)),
             "tripAvgSpeed (m/s)": math.ceil(float(tripInfo.get("routeLength")) / float(tripInfo.get("duration")) * 100) / 100,
 
-            "startpoint (lat, lon)": json.dumps(asdict(trajectory["startpoint"])),
-            "endpoint (lat, lon)": json.dumps(asdict(trajectory["endpoint"])),
-            "waypoints [(lat, lon)]": json.dumps([
-                asdict(waypoint)
-                for waypoint in trajectory["waypoints"]
-            ]),
-
             "batteryCapacity (Wh)": float(battery.get("actualBatteryCapacity", 0.0)),
             "energyConsumed (Wh)": float(battery.get("totalEnergyConsumed", 0.0)),
             "energyRegenerated (Wh)": float(battery.get("totalEnergyRegenerated", 0.0)),
-        })
+        }
+
+        # Add trajectory metadata when available
+        if trajectory is not None:
+            virtualTrip.update(
+                {
+                    "startpoint (lat, lon)": json.dumps(asdict(trajectory["startpoint"])),
+                    "endpoint (lat, lon)": json.dumps(asdict(trajectory["endpoint"])),
+                    "waypoints [(lat, lon)]": json.dumps([
+                        asdict(waypoint)
+                        for waypoint in trajectory["waypoints"]
+                    ]),
+                }
+            )
+
+        # Save generated virtual record
+        virtualTrips.append(virtualTrip)
 
     # Create virtual dataset
     virtualDataset = pd.DataFrame(virtualTrips)
 
     # Save virtual dataset as CSV
     virtualDataset.to_csv(
-        VIRTUAL_DATASETS / f"{generateVirtualDatasetId(sourceDataset)}.csv",
+        VIRTUAL_DATASETS / f"{generateVirtualDatasetId(sourceScenario)}.csv",
         index=False
     )
 

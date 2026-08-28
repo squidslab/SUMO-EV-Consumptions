@@ -1,6 +1,8 @@
-from data.validation.eVED_analysis import getElevationStats
+from data.validation.eVED_analysis import loadEVED, getElevationStats
 
 from SUMO.sumo_utils import loadSUMONetwork, estimateSUMOElevationError
+
+loadEVED()
 
 elevationStats = getElevationStats()
 

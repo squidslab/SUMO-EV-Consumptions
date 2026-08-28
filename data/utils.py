@@ -146,13 +146,22 @@ def getTrajectoriesBounds(trajectories: list[Trajectory]) -> tuple[GPSPoint, GPS
         longitude=maxLon
     )
 
-    return (minGPSPoint, maxGPSPoint)
+    return minGPSPoint, maxGPSPoint
 
 def getTrajectoryBatch(trajectories: list[Trajectory], batch: int) -> list[Trajectory]:
+    # Define trajectory batch
     start = (batch - 1) * 15000
     end = start + 15000
 
-    return trajectories[start:end]
+    trajectoryBatch = trajectories[start:end]
+
+    # Log trajectory batch info
+    print(
+        f"Processing trajectory batch {batch}: "
+        f"{len(trajectoryBatch)} trajectories"
+    )
+
+    return trajectoryBatch
 
 def buildTrajectoryDataframe(trajectories: list[Trajectory], includeSpeedData: bool = False) -> pd.DataFrame:
     SUMOTrajectories = []

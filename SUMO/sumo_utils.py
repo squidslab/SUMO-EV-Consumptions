@@ -5,17 +5,18 @@ from sumolib.net import readNet
 from sumolib.net.lane import Lane
 from sumolib.net.edge import Edge
 
-from paths import VALIDATION_CONFIG, CONFIG
 from arguments import args
 from custom_types import LanePosition
+
+from SUMO.sumo_paths import configPath
 
 # Loads correct SUMO Network to achieve some calculations which requires reading it
 def loadSUMONetwork():
     global net
 
     netPath = str(
-        VALIDATION_CONFIG / "osm_3D.net.xml.gz" if args.validation
-        else CONFIG / args.dataset / f"{args.dataset}_3D.net.xml"
+        configPath / "osm_3D.net.xml.gz" if args.validation
+        else configPath / args.scenario_name / f"{args.scenario_name}_3D.net.xml"
     )
 
     net = readNet(netPath)
@@ -63,55 +64,6 @@ def projectPointOnLane(lat: float, lon: float, lane: Lane):
         lengthSoFar += math.sqrt(segLen2)
 
     return bestOffset, bestDist
-
-# Returns the elevation of GPS point projected onto the specified lane
-def getElevationOnLane(lat: float, lon: float, lane: Lane):
-    # Retrieve the relative offset of the GPS point along the lane
-    offset, _ = projectPointOnLane(
-        lat,
-        lon,
-        lane
-    )
-
-    # Retrieve specifed lane polyline representation in 3D
-    shape = lane.getShape3D()
-
-    # Track the cumulative distance from the beginning of the lane
-    lengthSoFar = 0.0
-
-    # Iterate over each segment composing the lane shape
-    for point1, point2 in zip(shape[:-1], shape[1:]):
-        x1, y1 = point1[:2]
-        x2, y2 = point2[:2]
-
-        segmentLength = math.hypot(
-            x2 - x1,
-            y2 - y1
-        )
-
-        if segmentLength == 0:
-            continue
-
-        segmentEnd = lengthSoFar + segmentLength
-
-        # Check whether the projected point lies within the current segment
-        if offset <= segmentEnd:
-            # Calculate the relative position of the projected point within the current segment
-            t = (
-                offset - lengthSoFar
-            ) / segmentLength
-
-            # Retrieve the elevation at the beginning and end of the segment
-            z1 = point1[2]
-            z2 = point2[2]
-
-            # Linearly interpolate the elevation at the projected point
-            return z1 + t * (z2 - z1)
-
-        # Update the cumulative distance from the beginning of the lane
-        lengthSoFar = segmentEnd
-
-    return None
 
 # Returns the lane position (edge, lane, offset and distance) closest to the given GPS coordinates among the lanes of specified edge
 def getLanePositionOnEdge(lat: float, lon: float, edgeId: str):
@@ -176,6 +128,55 @@ def getClosestLanePosition(lat: float, lon: float, radius: float = 30.0):
         lon,
         edgeIds
     )
+
+# Returns the elevation of GPS point projected onto the specified lane
+def getElevationOnLane(lat: float, lon: float, lane: Lane):
+    # Retrieve the relative offset of the GPS point along the lane
+    offset, _ = projectPointOnLane(
+        lat,
+        lon,
+        lane
+    )
+
+    # Retrieve specifed lane polyline representation in 3D
+    shape = lane.getShape3D()
+
+    # Track the cumulative distance from the beginning of the lane
+    lengthSoFar = 0.0
+
+    # Iterate over each segment composing the lane shape
+    for point1, point2 in zip(shape[:-1], shape[1:]):
+        x1, y1 = point1[:2]
+        x2, y2 = point2[:2]
+
+        segmentLength = math.hypot(
+            x2 - x1,
+            y2 - y1
+        )
+
+        if segmentLength == 0:
+            continue
+
+        segmentEnd = lengthSoFar + segmentLength
+
+        # Check whether the projected point lies within the current segment
+        if offset <= segmentEnd:
+            # Calculate the relative position of the projected point within the current segment
+            t = (
+                offset - lengthSoFar
+            ) / segmentLength
+
+            # Retrieve the elevation at the beginning and end of the segment
+            z1 = point1[2]
+            z2 = point2[2]
+
+            # Linearly interpolate the elevation at the projected point
+            return z1 + t * (z2 - z1)
+
+        # Update the cumulative distance from the beginning of the lane
+        lengthSoFar = segmentEnd
+
+    return None
 
 # Returns a map which associates every trajectory ID with its SUMO vehicle type
 def mapSUMOVehicleTypes(otherIds: list[float], evedEVIds: list[float] = [], randomize: bool = False):

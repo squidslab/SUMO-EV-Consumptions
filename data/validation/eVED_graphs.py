@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 
-from data.validation.eVED_analysis import getVehStats, getTripStats, getTripsWeeklyDistr
+from data.validation.eVED_analysis import loadEVED, getVehStats, getTripStats, getTripsWeeklyDistr
+
+loadEVED()
 
 vehStats = getVehStats()
 tripStats = getTripStats()

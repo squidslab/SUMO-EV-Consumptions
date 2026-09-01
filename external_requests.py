@@ -99,7 +99,7 @@ def getCityBoundingBox(city: str) -> tuple[GPSPoint, GPSPoint]:
             },
             headers={
                 "User-Agent": (
-                    "SUMO-EV-Consumption/1.0 "
+                    "SUMO-EV-Consumptions/1.0 "
                     "(University of Naples Federico II)"
                 )
             },

@@ -1,6 +1,6 @@
-# SUMO-EV-Consumption
+# SUMO-EV-Consumptions
 
-**SUMO-EV-Consumption** is a tool for generating virtual electric-vehicle consumption datasets using [SUMO (Simulation of Urban MObility)](https://www.eclipse.org/sumo/).
+**SUMO-EV-Consumptions** is a tool for generating virtual electric-vehicle consumption datasets using [SUMO (Simulation of Urban MObility)](https://www.eclipse.org/sumo/).
 
 The tool supports different simulation scenarios and can either enrich existing trajectory datasets with simulated electric-vehicle consumption data or generate completely synthetic datasets from a given city.
 
@@ -712,7 +712,7 @@ The validation workflow currently uses eVED as its reference dataset.
 A simplified project structure is:
 
 ```text
-SUMO-EV-Consumption/
+SUMO-EV-Consumptions/
 │
 ├── data/
 │   └── trajectory_parser/

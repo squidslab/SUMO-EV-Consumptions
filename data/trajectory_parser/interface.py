@@ -6,7 +6,7 @@ from custom_types import Trajectory
 
 class TrajectoryParser(ABC):
     """
-    Abstract parser for datasets containing timestamped GPS trajectories.
+    Abstract parser for datasets containing trajectories.
 
     Every parser implementing this interface must:
         1. Load its source dataset into a DataFrame.

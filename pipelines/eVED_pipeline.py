@@ -31,7 +31,7 @@ def runEVEDPipeline():
         eVEDTrajectories, args.trajectory_batch
     )
 
-    # Build trajectories as dataframe so it is suitable for SUMO simulation function
+    # Build trajectories as dataframe so it is suitable for SUMO routes generation
     SUMOtrajectories = buildTrajectoryDataframe(trajectoryBatch, True)
 
     # Generate SUMO routes using trajectories data if requested

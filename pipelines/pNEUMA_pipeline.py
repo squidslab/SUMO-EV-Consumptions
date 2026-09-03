@@ -27,7 +27,7 @@ def runPNEUMAPipeline():
         pNEUMATrajectories, args.trajectory_batch
     )
 
-    # Build trajectory as dataframe so it is suitable for SUMO simulation function
+    # Build trajectory as dataframe so it is suitable for SUMO routes generation
     SUMOtrajectories = buildTrajectoryDataframe(trajectoryBatch, True)
 
     # Generate SUMO routes using trajectories data if requested

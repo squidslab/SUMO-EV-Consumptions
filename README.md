@@ -25,16 +25,7 @@ SUMO must be installed locally because the tool uses several SUMO utilities, inc
 
 ### Python dependencies
 
-The project currently uses the following external Python modules/libraries:
-
-```text
-pyproj
-pandas
-matplotlib
-rtree
-python-dotenv
-requests
-```
+The project uses several external Python modules and libraries for different aspects of the tool. The required Python dependencies, including their specific versions, are listed in the `requirements.txt` file.
 
 The modules are used for different aspects of the tool, including:
 
@@ -44,6 +35,16 @@ The modules are used for different aspects of the tool, including:
 * **rtree** — spatial indexing and geographical queries.
 * **python-dotenv** — loading configuration variables from the `.env` file.
 * **requests** — communicating with external APIs, including OpenTopography and Nominatim.
+* **numpy** — numerical computations and array-based data processing.
+* **sumolib** — interacting with SUMO networks and performing SUMO-related operations.
+
+To install all the required Python dependencies, run the following command from the project root:
+
+```bash
+pip install -r requirements.txt
+```
+
+This installs the Python packages required by the project with the versions specified in `requirements.txt`.
 
 ---
 

@@ -141,8 +141,8 @@ The `city` scenario is used when no trajectory dataset is available.
 
 Instead of providing an existing dataset, the user specifies a city. The tool:
 
-1. Uses the city name to obtain its geographical bounding box.
-2. Generates a suitable 3D SUMO network covering the selected area.
+1. Uses the city name to query the [Nominatim](https://nominatim.org/) geocoding service and obtain the geographical bounding box of the selected city.
+2. Uses the retrieved bounding box to generate a suitable 3D SUMO network covering the selected area.
 3. Generates a specified number of random SUMO trajectories within the network.
 4. Runs the SUMO simulation.
 5. Generates a virtual dataset from the simulation results.

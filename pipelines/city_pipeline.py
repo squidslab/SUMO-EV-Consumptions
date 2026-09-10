@@ -23,7 +23,7 @@ def runCityPipeline():
     # Generate random SUMO routes if requested
     if args.generate_ruotes:
         generateRandomRoutes(
-            args.trajectories_number, args.random_veh_types, args.depart_delay
+            args.trajectories_number, args.custom_vehicle, args.random_veh_types, args.depart_delay
         )
 
     # Run SUMO simulation

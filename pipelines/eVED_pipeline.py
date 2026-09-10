@@ -5,7 +5,7 @@ from paths import EVED, EVED_STATIC, OUTPUT
 from data.utils import getTrajectoriesBounds, getTrajectoryBatch, buildTrajectoryDataframe
 from data.trajectory_parser.eVED_parser import EVEDParser
 
-from SUMO.sumo_utils import mapSUMOVehicleTypes
+from SUMO.sumo_vehicles import mapSUMOVehicleTypes
 from SUMO.sumo import generateSUMO3DNet, generateRoutes, runSimulation
 
 from virtual_data.simulation_results import printSimulationStats
@@ -51,7 +51,7 @@ def runEVEDPipeline():
 
         # Retrieve SUMO vehicle types map
         SUMOvehicleTypes = mapSUMOVehicleTypes(
-            otherTrajectoryIds, EVTrajectoryIds, randomize=args.random_veh_types
+            otherTrajectoryIds, EVTrajectoryIds, args.custom_vehicle, args.random_veh_types
         )
 
         # Generate SUMO routes

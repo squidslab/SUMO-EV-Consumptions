@@ -3,10 +3,10 @@ import math
 import xml.etree.ElementTree as ET
 
 from arguments import args
-from custom_types import SUMOTrip, SUMOVehicleExtraData, SUMOBatteryData, SUMOSimStats
+from custom_types import CustomVehicle, SUMOTrip, SUMOVehicleExtraData, SUMOBatteryData, SUMOSimStats
 
 from SUMO.sumo_paths import configPath, customPath, outputPath
-from SUMO.sumo_utils import getLanePositionOnEdge, getLanePositionFromEdgeList, mapSUMOVehicleTypes
+from SUMO.sumo_network import getLanePositionOnEdge, getLanePositionFromEdgeList
 
 # Sets up SUMO config files based on the specified scenario
 def setupSUMOConfig():
@@ -128,6 +128,110 @@ def setupDuarouterConfig():
         xml_declaration=True
     )
 
+# Builds custom vehicle type as requested and saves it into vehicle_types.add.xml
+def buildCustomVehType(customType: CustomVehicle):
+    vehicleTypesAddFilePath = customPath / "vehicle_types.add.xml"
+
+    # Default parameters values
+    defaultParameters = {
+        "mass": 1800,      # kg
+        "accel": 2.5,      # m/s^2
+        "decel": 3.0,      # m/s^2
+        "maxSpeed": 44.44,  # m/s
+        "sigma": 1,
+        "battery": 60000   # Wh
+    }
+
+    # Use custom values when specified, otherwise use defaults
+    mass = (
+        customType.mass
+        if customType.mass is not None
+        else defaultParameters["mass"]
+    )
+
+    accel = (
+        customType.accel
+        if customType.accel is not None
+        else defaultParameters["accel"]
+    )
+
+    maxSpeed = (
+        round(customType.maxSpeed / 3.6, 2)
+        if customType.maxSpeed is not None
+        else defaultParameters["maxSpeed"]
+    )
+
+    battery = (
+        customType.battery * 1000
+        if customType.battery is not None
+        else defaultParameters["battery"]
+    )
+
+    # Parse vehicle types additional file
+    vehicleTypesAddFile = ET.parse(vehicleTypesAddFilePath)
+    additional = vehicleTypesAddFile.getroot()
+
+    # Find existing custom vehicle type
+    customVehType = additional.find("./vType[@id='custom_ev']")
+
+    if customVehType is None:
+        customVehType = ET.SubElement(
+            additional,
+            "vType",
+            {
+                "id": "custom_ev",
+                "vClass": "passenger",
+                "emissionClass": "Energy"
+            }
+        )
+
+    # Set/update vehicle parameters
+    customVehType.set("mass", str(mass))
+    customVehType.set("accel", str(accel))
+    customVehType.set("decel", str(defaultParameters["decel"]))
+    customVehType.set("maxSpeed", str(maxSpeed))
+    customVehType.set("sigma", str(defaultParameters["sigma"]))
+
+    # Battery parameters
+    hasBatteryDevice = customVehType.find(
+        "./param[@key='has.battery.device']"
+    )
+
+    if hasBatteryDevice is None:
+        ET.SubElement(
+            customVehType,
+            "param",
+            {
+                "key": "has.battery.device",
+                "value": "true"
+            }
+        )
+    else:
+        hasBatteryDevice.set("value", "true")
+
+    batteryCapacity = customVehType.find(
+        "./param[@key='device.battery.capacity']"
+    )
+
+    if batteryCapacity is None:
+        ET.SubElement(
+            customVehType,
+            "param",
+            {
+                "key": "device.battery.capacity",
+                "value": str(battery)
+            }
+        )
+    else:
+        batteryCapacity.set("value", str(battery))
+
+    # Save updated additional file
+    vehicleTypesAddFile.write(
+        vehicleTypesAddFilePath,
+        encoding="UTF-8",
+        xml_declaration=True
+    )
+
 # Generate custom.trips.xml and add trips to it
 def generateSUMOTrips(sumoTrips: list[SUMOTrip]):
     customTripsFilePath = customPath / "custom.trips.xml"
@@ -223,7 +327,9 @@ def addExtraToSUMOVehicles(vehiclesExtra: dict[str, SUMOVehicleExtraData]):
     )
 
 # Adds missing depart times and vehicle types to randomly generated vehicles into custom.rou.xml
-def finalizeRandomSUMOVehicles(randomizeVehTypes: bool, departDelay: float):
+def finalizeRandomSUMOVehicles(customVehicle: CustomVehicle | None, randomizeVehTypes: bool, departDelay: float):
+    from SUMO.sumo_vehicles import mapSUMOVehicleTypes
+
     customRoutesFilePath = (
         customPath / "custom.rou.xml" if args.validation
         else customPath / args.scenario_name / "custom.rou.xml"
@@ -237,7 +343,7 @@ def finalizeRandomSUMOVehicles(randomizeVehTypes: bool, departDelay: float):
     vehicleIds = [vehicle.get("id")for vehicle in vehicles]
 
     SUMOvehicleTypes = mapSUMOVehicleTypes(
-        vehicleIds, randomize=randomizeVehTypes
+        vehicleIds, customType=customVehicle, randomize=randomizeVehTypes
     )
 
     # Set current depart

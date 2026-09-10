@@ -1,5 +1,4 @@
 import math
-import random
 
 from sumolib.net import readNet
 from sumolib.net.lane import Lane
@@ -177,41 +176,6 @@ def getElevationOnLane(lat: float, lon: float, lane: Lane):
         lengthSoFar = segmentEnd
 
     return None
-
-# Returns a map which associates every trajectory ID with its SUMO vehicle type
-def mapSUMOVehicleTypes(otherIds: list[float], evedEVIds: list[float] = [], randomize: bool = False):
-    SUMOvehicleTypes: dict[float, str] = {}
-
-    EVTypes = [
-        "tesla_model_y",
-        "tesla_model_3",
-        "chevrolet_equinox_ev",
-        "ford_mustang_mach_e",
-        "hyundai_ioniq_5"
-    ]
-
-    # eVED electric vehicles always use the Leaf 2013 vehicle type
-    for trajectoryId in evedEVIds:
-        SUMOvehicleTypes[trajectoryId] = "leaf_2013"
-
-    # Other vehicles use either the generic EV type or a randomly selected EV model when randomization is enabled
-    if randomize:
-        # Create a balanced list of vehicle types to assign
-        vehicleTypes = [
-            EVTypes[i % len(EVTypes)]
-            for i in range(len(otherIds))
-        ]
-
-        # Randomize the order while keeping the distribution balanced
-        random.shuffle(vehicleTypes)
-
-        for trajectoryId, vehicleType in zip(otherIds, vehicleTypes):
-            SUMOvehicleTypes[trajectoryId] = vehicleType
-    else:
-        for trajectoryId in otherIds:
-            SUMOvehicleTypes[trajectoryId] = "ev_generic"
-
-    return SUMOvehicleTypes
 
 # Estimates the MAE and RMSE between dataset and SUMO elevations
 def estimateSUMOElevationError(elevationStats: dict[tuple[float, float], float], stopAfter: int = 10000):

@@ -4,7 +4,7 @@ from paths import PNEUMA, OUTPUT
 from data.utils import getTrajectoriesBounds, getTrajectoryBatch, buildTrajectoryDataframe
 from data.trajectory_parser.pNEUMA_parser import pNEUMAParser
 
-from SUMO.sumo_utils import mapSUMOVehicleTypes
+from SUMO.sumo_vehicles import mapSUMOVehicleTypes
 from SUMO.sumo import generateSUMO3DNet, generateRoutes, runSimulation
 
 from virtual_data.simulation_results import printSimulationStats
@@ -37,7 +37,7 @@ def runPNEUMAPipeline():
 
         # Retrieve SUMO vehicle types map
         SUMOvehicleTypes = mapSUMOVehicleTypes(
-            trajectoryIds, randomize=args.random_veh_types
+            trajectoryIds, customType=args.custom_vehicle, randomize=args.random_veh_types
         )
 
         # Generate SUMO routes

@@ -1,6 +1,6 @@
 # EVGen
 
-**EVGen** is a tool for generating virtual electric-vehicle consumption datasets using [SUMO (Simulation of Urban MObility)](https://www.eclipse.org/sumo/).
+**EVGen** is a modular Python framework for generating virtual electric vehicle consumption datasets through [SUMO (Simulation of Urban MObility)](https://www.eclipse.org/sumo/). It provides a command-line interface (CLI) for configuring and executing different data generation scenarios.
 
 The tool supports different simulation scenarios and can either enrich existing trajectory datasets with simulated electric-vehicle consumption data or generate completely synthetic datasets from a given city.
 
@@ -567,7 +567,7 @@ By default, vehicles without a specific vehicle model are assigned the generic S
 ev_generic
 ```
 
-When `--random-veh-types` is enabled, these vehicles are instead assigned one of the available specific electric vehicle models:
+When `--random-veh-types` is enabled, these vehicles are instead assigned to one of the available predefined electric vehicle model types:
 
 * `tesla_model_y`
 * `tesla_model_3`
@@ -584,6 +584,89 @@ The option is also applicable to the `city` scenario. Since randomly generated c
 The option is **disabled by default**.
 
 Without this option, vehicles with an unknown model use `ev_generic`.
+
+---
+
+## `--custom-vehicle`
+
+Specifies a custom electric vehicle type to be used for trajectories whose original vehicle model is unknown.
+
+The custom vehicle is specified as a comma-separated list of `key=value` parameters:
+
+```text
+mass=1800,accel=2.5,max-speed=160,battery=75
+```
+
+The supported parameters are:
+
+* `mass` — vehicle mass in kg.
+* `accel` — vehicle acceleration in m/s².
+* `max-speed` — maximum speed in km/h.
+* `battery` — battery capacity in kWh.
+
+For example:
+
+```bash
+python main.py --scenario dataset --scenario-name eVED --custom-vehicle "mass=1900,accel=2.8,max-speed=180,battery=75"
+```
+
+The custom vehicle is represented internally by the SUMO vehicle type:
+
+```text
+custom_ev
+```
+
+When `--custom-vehicle` is specified, the corresponding `custom_ev` vehicle type is created or updated in the SUMO vehicle configuration.
+
+Parameters that are not specified use the default values of the generic electric vehicle:
+
+| Parameter   |                      Default value |
+| ----------- | ---------------------------------: |
+| `mass`      |                            1800 kg |
+| `accel`     |                           2.5 m/s² |
+| `decel`     |                           3.0 m/s² |
+| `max-speed` | 44.44 m/s (approximately 160 km/h) |
+| `sigma`     |                                  1 |
+| `battery`   |                             60 kWh |
+
+Only `mass`, `accel`, `max-speed` and `battery` can be customized through this argument. `decel` and `sigma` always use the default values.
+The input values are automatically converted to the units required by SUMO: `max-speed` is converted from km/h to m/s and `battery` is converted from kWh to Wh.
+
+The argument can be used independently or together with `--random-veh-types`.
+
+### Interaction with `--random-veh-types`
+
+The behavior depends on whether `--custom-vehicle` and `--random-veh-types` are specified.
+
+| `--custom-vehicle` | `--random-veh-types` | Vehicle types assigned to unknown-model trajectories |
+| ------------------ | -------------------- | ---------------------------------------------------- |
+| Not specified      | Not specified        | `ev_generic`                                         |
+| Specified          | Not specified        | `custom_ev`                                          |
+| Not specified      | Specified            | Predefined electric vehicle types                    |
+| Specified          | Specified            | Predefined electric vehicle types + `custom_ev`      |
+
+When both options are specified, the custom vehicle is added to the randomization pool together with the predefined electric vehicle models.
+
+For example:
+
+```bash
+python main.py --scenario dataset --scenario-name eVED --custom-vehicle "mass=1900,accel=2.8,max-speed=180,battery=75" --random-veh-types
+```
+
+In this case, unknown-model trajectories are randomly assigned among:
+
+* `tesla_model_y`
+* `tesla_model_3`
+* `chevrolet_equinox_ev`
+* `ford_mustang_mach_e`
+* `hyundai_ioniq_5`
+* `custom_ev`
+
+The custom vehicle therefore replaces the generic `ev_generic` type when used without randomization, while with randomization it becomes an additional available vehicle type rather than replacing any of the predefined models.
+
+For eVED, electric vehicles with an explicitly identified electric-vehicle classification always use `leaf_2013`, regardless of whether `--custom-vehicle` or `--random-veh-types` is specified. These options affect only trajectories whose original vehicle model is unknown.
+
+The option is applicable to both the `dataset` and `city` scenarios.
 
 ---
 
@@ -695,6 +778,26 @@ python main.py --scenario city --scenario-name "Naples, Italy" --random-veh-type
 ```
 
 randomly generated vehicles are assigned the available specific SUMO electric vehicle models instead of the generic type.
+
+---
+
+## Use a custom electric vehicle
+
+```bash
+python main.py --scenario dataset --scenario-name eVED --custom-vehicle "mass=1900,accel=2.8,max-speed=180,battery=75"
+```
+
+This creates or updates the `custom_ev` SUMO vehicle type and assigns it to trajectories whose original vehicle model is unknown.
+
+---
+
+## Use a custom vehicle with randomization
+
+```bash
+python main.py --scenario dataset --scenario-name eVED --custom-vehicle "mass=1900,accel=2.8,max-speed=180,battery=75" --random-veh-types
+```
+
+This adds `custom_ev` to the pool of predefined electric vehicle types. Unknown-model trajectories are then randomly assigned among all available predefined models and the custom vehicle, while maintaining a balanced distribution.
 
 ---
 
@@ -819,6 +922,7 @@ For a city scenario, the scenario name identifies the city used to generate the 
 | `--trajectories-number`   | Specify the number of random trajectories to generate in the `city` scenario |
 | `--eved-veh-types`        | Select ICE/HEV/PHEV/EV vehicles when using eVED                              |
 | `--random-veh-types`      | Randomly assign balanced SUMO EV models to vehicles without a known model    |
+| `--custom-vehicle`        | Specify a custom electric vehicle type and its parameters                    |
 | `--depart-delay`          | Set the departure delay between generated trips                              |
 
 The `--scenario` argument currently supports two scenario types:
@@ -833,6 +937,10 @@ The `--scenario` argument currently supports two scenario types:
 When `--skip-route-generation` is specified, network generation is also skipped. When using this option with the `dataset` scenario, the reused routes must correspond to the selected `--trajectory-batch`; otherwise, the simulated trajectory IDs will not match the original trajectory metadata and the resulting virtual dataset may be empty.
 
 `--random-veh-types` is disabled by default. When enabled, vehicles without a known model are assigned specific SUMO electric vehicle models in a randomized but balanced distribution instead of using the generic `ev_generic` type.
+
+`--custom-vehicle` is disabled by default. When specified without `--random-veh-types`, vehicles without a known model are assigned the resulting `custom_ev` type. When used together with `--random-veh-types`, the custom vehicle is added to the pool of predefined electric vehicle models and participates in the balanced randomization.
+
+For eVED, explicitly identified electric vehicles always use the `leaf_2013` SUMO vehicle type, regardless of the custom vehicle or randomization options.
 
 ---
 

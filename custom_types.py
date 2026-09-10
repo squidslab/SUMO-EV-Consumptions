@@ -31,6 +31,13 @@ class Trajectory:
     samples: list[TrajectorySample]
 
 @dataclass
+class CustomVehicle:
+    mass: float | None
+    accel: float | None
+    maxSpeed: float | None
+    battery: float | None
+
+@dataclass
 class LanePosition:
     edge: Edge
     lane: Lane

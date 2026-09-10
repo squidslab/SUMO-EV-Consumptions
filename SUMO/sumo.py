@@ -1,6 +1,5 @@
 import os
 import shutil
-import math
 import pandas as pd
 import subprocess
 import sys
@@ -9,10 +8,10 @@ from arguments import args
 from external_requests import downloadElevation
 
 from pathlib import Path
-from custom_types import GPSPoint, SUMOTrip, SUMOVehicleExtraData
+from custom_types import GPSPoint, CustomVehicle, SUMOTrip, SUMOVehicleExtraData
 
 from SUMO.sumo_paths import configPath, customPath
-from SUMO.sumo_utils import loadSUMONetwork
+from SUMO.sumo_network import loadSUMONetwork
 from SUMO.sumo_xml import setupSUMOConfig, setupDuarouterConfig, generateSUMOTrips, addExtraToSUMOVehicles, finalizeRandomSUMOVehicles, readSUMOBatteryOut, getSUMOSimulationStats
 
 # Generates a 3D SUMO net using osmGet, osmBuild and netconvert based on the bounding box specified by given GPSPoints
@@ -193,7 +192,7 @@ def generateRoutes(trajectories: pd.DataFrame, SUMOvehicleTypes: dict[float, str
     print("SUMO routes generated")
 
 # Generate random SUMO routes using randomTrips based on given number of trajectories
-def generateRandomRoutes(numberofTrajectories: int = 5000, randomizeVehTypes: bool = False, departDelay: float = 0):
+def generateRandomRoutes(numberofTrajectories: int = 5000, customVehicle: CustomVehicle | None = None, randomizeVehTypes: bool = False, departDelay: float = 0):
     scenarioName = args.scenario_name
 
     # Set SUMO_HOME path
@@ -242,7 +241,7 @@ def generateRandomRoutes(numberofTrajectories: int = 5000, randomizeVehTypes: bo
         ) from error
 
     # Add missing depart times and vehicle types to randomly generated SUMO vehicles into custom.rou.xml
-    finalizeRandomSUMOVehicles(randomizeVehTypes, departDelay)
+    finalizeRandomSUMOVehicles(customVehicle, randomizeVehTypes, departDelay)
 
     # Log successful route generation
     print("Random SUMO routes generated")

@@ -6,7 +6,7 @@ from arguments import args
 from data.validation.eVED_data import getElectricVehIds
 from data.validation.eVED_analysis import loadEVED, getTripStats
 
-from SUMO.sumo_utils import mapSUMOVehicleTypes
+from SUMO.sumo_vehicles import mapSUMOVehicleTypes
 from SUMO.sumo import generateRoutes, runSimulation
 
 from virtual_data.simulation_results import printSimulationStats, printValidationErrors
@@ -33,7 +33,7 @@ def runSUMOvalidation():
 
         # Retrieve SUMO vehicle types map
         SUMOvehicleTypes = mapSUMOVehicleTypes(
-            otherTrajectoryIds, EVTrajectoryIds, randomize=args.random_veh_types
+            otherTrajectoryIds, EVTrajectoryIds, args.custom_vehicle, args.random_veh_types
         )
 
         # Generate SUMO routes

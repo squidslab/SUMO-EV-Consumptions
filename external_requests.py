@@ -48,11 +48,11 @@ def downloadElevation(minGPSPoint: GPSPoint, maxGPSPoint: GPSPoint, outputPath: 
         # Check for any errors based on response status
         response.raise_for_status()
 
-        # Log successful response
-        print("Elevation file successfully retrieved using OpenTopography API")
-
         # Save .tif file
         outputPath.write_bytes(response.content)
+
+        # Log successful response
+        print("Elevation file successfully retrieved using OpenTopography API")
 
     except requests.RequestException as error:
         raise RuntimeError(

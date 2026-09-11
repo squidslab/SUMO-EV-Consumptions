@@ -6,10 +6,13 @@ from arguments import args
 
 from SUMO.sumo_validation import runSUMOvalidation
 
-from pipelines.city_pipeline import runCityPipeline
 from pipelines.eVED_pipeline import runEVEDPipeline
 from pipelines.DLR_pipeline import runDLRPipeline
 from pipelines.pNEUMA_pipeline import runPNEUMAPipeline
+
+from pipelines.city_pipeline import runCityPipeline
+
+from pipelines.area_pipeline import runAreaPipeline
 
 # Load env configuration
 load_dotenv()
@@ -37,6 +40,12 @@ match args.scenario:
                 quit()
     case "city":
         runCityPipeline()
+    case "area":
+        if args.scenario_bounding_box is None:
+            print("--scenario-bounding-box is required when using the 'area' scenario!")
+            quit()
+
+        runAreaPipeline()
     case _:
         print("Invalid scenario!")
         quit()
